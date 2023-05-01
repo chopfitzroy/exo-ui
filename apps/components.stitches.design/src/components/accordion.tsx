@@ -11,8 +11,13 @@ export const Accordion = () => {
   return (
     <HeadlessAccordion items={items}>
       {({ item, meta }) => (
-        <div>
+        <div onClick={meta.onClick}>
           {item.name}
+          {meta.active && (
+            <div>
+              {item.value}
+            </div>
+          )}
         </div>
       )}
     </HeadlessAccordion>

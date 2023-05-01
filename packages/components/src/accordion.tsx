@@ -9,9 +9,9 @@ interface ChildrenProps<T> {
   meta: {
     index: number;
     active: boolean;
-    select: () => void;
     isLast: boolean;
     isFirst: boolean;
+    onClick: () => void;
   }
 }
 
@@ -27,28 +27,30 @@ const defaultAccordionOptions = {
 
 export const Accordion = <T = never>({ items, children, options = defaultAccordionOptions }: AccordionProps<T>) => {
   const [activeAccordions, setActiveAccordions] = useState<number[]>([]);
-  
+
   const hydrated = items.map((item, index, payload) => {
     const active = activeAccordions.includes(index);
     const isLast = payload.length === index + 1;
     const isFirst = index === 0;
 
-    const select = () => setActiveAccordions(current => {
+    const onClick = () => setActiveAccordions(current => {      
+      const exists = current.includes(index);
+      
       if (options.closeAllOthersOnExpand) {
-        return [index];
+        return exists ? [] : [index];
       }
 
       const filtered = current.filter(item => item !== index);
 
-      return [...filtered, index];
+      return exists ? filtered : [...filtered, index];
     });
 
     const meta = {
       index,
       active,
-      select,
       isLast,
-      isFirst
+      isFirst,
+      onClick,
     }
 
     return {
