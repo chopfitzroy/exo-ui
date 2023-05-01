@@ -22,17 +22,22 @@ interface ChildrenProps<T> {
 interface AccordionProps <T>{
   items: T[];
   children: (props: ChildrenProps<T>) => ReactNode;
-  options?: AccordionOptions;
+  options?: Partial<AccordionOptions>;
 }
 
 const defaultAccordionOptions = {
   closeAllOthersOnExpand: false
 }
 
-export function Accordion<T = never>({ items, children, options = defaultAccordionOptions }: AccordionProps<T>) {
+export function Accordion<T = never>({ items, children, options = {} }: AccordionProps<T>) {
   const [activeAccordions, setActiveAccordions] = useState<number[]>([]);
 
-  const hydrated = items.map((item, index, payload) => {
+  const finalOptions = {
+    ...defaultAccordionOptions,
+    ...options
+  }
+
+  const finalItems = items.map((item, index, payload) => {
     const active = activeAccordions.includes(index);
     const isLast = payload.length === index + 1;
     const isFirst = index === 0;
@@ -40,7 +45,7 @@ export function Accordion<T = never>({ items, children, options = defaultAccordi
     const onClick = () => setActiveAccordions(current => {      
       const exists = current.includes(index);
       
-      if (options.closeAllOthersOnExpand) {
+      if (finalOptions.closeAllOthersOnExpand) {
         return exists ? [] : [index];
       }
 
@@ -63,5 +68,5 @@ export function Accordion<T = never>({ items, children, options = defaultAccordi
     }
   });
 
-  return <>{hydrated.map(item => children(item))}</>;
+  return <>{finalItems.map(item => children(item))}</>;
 }
