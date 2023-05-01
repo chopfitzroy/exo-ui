@@ -1,4 +1,8 @@
-import { ReactNode, useState } from 'react';
+import type { ReactNode } from 'react';
+
+import React from 'react';
+
+import { useState } from 'react';
 
 interface AccordionOptions {
   closeAllOthersOnExpand: boolean;  
@@ -25,7 +29,7 @@ const defaultAccordionOptions = {
   closeAllOthersOnExpand: false
 }
 
-export const Accordion = <T = never>({ items, children, options = defaultAccordionOptions }: AccordionProps<T>) => {
+export function Accordion<T = never>({ items, children, options = defaultAccordionOptions }: AccordionProps<T>) {
   const [activeAccordions, setActiveAccordions] = useState<number[]>([]);
 
   const hydrated = items.map((item, index, payload) => {

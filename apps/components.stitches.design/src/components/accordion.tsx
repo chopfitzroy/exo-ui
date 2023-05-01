@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { h as _ } from 'preact';
 
 import { Accordion as HeadlessAccordion } from 'components';
 
