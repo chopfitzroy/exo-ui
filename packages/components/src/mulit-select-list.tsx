@@ -1,8 +1,6 @@
-import { Context, createContext, ReactNode, useContext } from 'react';
+import type { ReactNode} from 'react';
 
-import React from 'react';
-
-import { useState } from 'react';
+import React, { Context, createContext, useContext, useState } from 'react';
 
 interface Actions {
   select: () => void;
@@ -83,7 +81,6 @@ function createProviderComponent<T extends any[]>(Context: Context<undefined | C
 
     return <Context.Provider value={value}>{children}</Context.Provider>
   }
-
 }
 
 function createHook<T extends any[]>(Context: Context<undefined | ComputedData<T>>) {
@@ -108,7 +105,6 @@ function createValuesComponent<T extends any[]>(Context: Context<undefined | Com
   };
 }
 
-
 function createMapComponent<T extends any[]>(Context: Context<undefined | ComputedData<T>>) {
   const useMultiSelectList = createHook(Context);
 
@@ -118,8 +114,6 @@ function createMapComponent<T extends any[]>(Context: Context<undefined | Comput
     return <>{hydratedItems.map(item => children(item))}</>;
   };
 }
-
-
 
 export function createMultiSelectListComponent<T extends any[]>() {
   const Context = createContext<undefined | ComputedData<T>>(undefined);
