@@ -16,12 +16,15 @@ Goals of this library:
 - [x] SingleSelectList (Carousels, etc...)
 - [ ] QuantityList (Shopping cart, etc...)
 - [ ] Pagination (Pagination, etc...)
+- [ ] Filtering (Categories, Search, etc...)
 - [ ] Toggle (Modals, Dropdowns, etc...)
 - [ ] Queue (Multi step form, product tour, etc...)
 - [ ] Timer (Alerts, etc...)
 
 **Considering:**
 
+- [ ] Text validation - Something like email validation is a good example, would likely require 3rd party dependencies, most likely [Zod](https://zod.dev/)
+- [ ] Text masking - Something like date or financial formatting is a good example, would likely require 3rd party dependencies
 - [ ] Carousel - This is really just an abstraction over `SingleSelectList` and may not be worth implementing
 - [ ] Slider - The implementation for this is not obvious and it will be difficult to create nice ergonomics
 
