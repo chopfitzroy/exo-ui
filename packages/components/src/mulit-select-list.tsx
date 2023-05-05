@@ -6,10 +6,10 @@ import { useState } from 'react';
 
 interface Meta {
   index: number;
-  active: boolean;
   isLast: boolean;
   isFirst: boolean;
   onClick: () => void;
+  isSelected: boolean;
 };
 
 interface AugmentedItem<T extends never[]> {
@@ -40,76 +40,93 @@ interface MapComponentProps<T extends never[]> {
   children: (props: ComputedDataIterator<T>) => ReactNode;
 }
 
-export function ProivderComponent<T extends never[]>({ items, children }: ProviderComponentProps<T>) {
-  const [activeItems, setActiveItems] = useState<number[]>([]);
+function createProviderComponent<T extends never[]>(Context: Context<undefined | ComputedData<T>>) {
 
-  const selectedItems = activeItems.map(item => items[item])
+  return function MultiSelectListProvider({ items, children }: ProviderComponentProps<T>) {
+    const [activeItems, setActiveItems] = useState<number[]>([]);
 
-  const hydratedItems = items.map((item, index, payload) => {
-    const isLast = payload.length === index + 1;
-    const isFirst = index === 0;
-    const isSelected = activeItems.includes(index);
+    const hydratedItems = items.map((item, index, payload) => {
+      const isLast = payload.length === index + 1;
+      const isFirst = index === 0;
+      const isSelected = activeItems.includes(index);
 
-    const onClick = () => setActiveItems(current => {
-      const exists = current.includes(index);
-      const filtered = current.filter(item => item !== index);
-      return exists ? filtered : [...filtered, index];
+      const onClick = () => setActiveItems(current => {
+        const exists = current.includes(index);
+        const filtered = current.filter(item => item !== index);
+        return exists ? filtered : [...filtered, index];
+      });
+
+      const meta = {
+        index,
+        isLast,
+        isFirst,
+        onClick,
+        isSelected
+      }
+
+      return {
+        item,
+        meta
+      }
     });
 
-    const meta = {
-      index,
-      isLast,
-      isFirst,
-      onClick,
-      isSelected
+    const selectedItems = activeItems.map(item => items[item]);
+
+    const value = {
+      hydratedItems,
+      selectedItems
     }
 
-    return {
-      item,
-      meta
+    return <Context.Provider value={value}>{children}</Context.Provider>
+  }
+
+}
+
+function createHook<T extends never[]>(Context: Context<undefined | ComputedData<T>>) {
+  return function useMultiSelectList() {
+    const value = useContext(Context);
+
+    if (value === undefined) {
+      throw new Error('useMultiSelectList must be used within a MultiSelectListProvider');
     }
-  });
-
-  return children;
-}
-
-function ValuesComponent<T extends never[]>({ children }: ValuesComponentProps<T>) {
-
-}
-
-function MapComponent<T extends never[]>({ children }: MapComponentProps<T>) {
-
-}
-
-function createHook<T>(context: Context<T>) {
-  // @NOTE
-  // - Using a named function improves readability
-  // - It can also help when debugging
-  function useMultiSelectList() {
-    const value = useContext(context);
 
     return value;
   }
-
-  return useMultiSelectList;
 }
 
+function createValuesComponent<T extends never[]>(Context: Context<undefined | ComputedData<T>>) {
+  const useMultiSelectList = createHook(Context);
+
+  return function MultiSelectListValuesComponent({ children }: ValuesComponentProps<T>) {
+    const { hydratedItems, selectedItems } = useMultiSelectList();
+
+    return <>{children({ hydratedItems, selectedItems })}</>
+  };
+}
+
+
+function createMapComponent<T extends never[]>(Context: Context<undefined | ComputedData<T>>) {
+  const useMultiSelectList = createHook(Context);
+
+  return function MultiSelectListMapComponent({ children }: MapComponentProps<T>) {
+    const { hydratedItems } = useMultiSelectList();
+
+    return <>{hydratedItems.map(item => children(item))}</>;
+  };
+}
+
+
+
 export function createMultiSelectListComponent<T extends never[]>() {
-  const context = createContext<undefined | ComputedData<T>>(undefined);
+  const Context = createContext<undefined | ComputedData<T>>(undefined);
 
-  // @TODO
-  // - This needs to become something like
-  // - `createProviderComponent(context)`
-  // - `createValuesComponent(context)`
-  // - `createMapComponent(context)`
-
-  return [
-    {
-      Provider: ProivderComponent<T>,
-      Values: ValuesComponent<T>,
-      Map: MapComponent<T>
+  return {
+    useMultiSelectList: createHook(Context),
+    MultiSelectList: {
+      Provider: createProviderComponent(Context),
+      Values: createValuesComponent(Context),
+      Map: createMapComponent(Context),
     },
-    createHook(context)
-  ] as const;
+  };
 }
 
