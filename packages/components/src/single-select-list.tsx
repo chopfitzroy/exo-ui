@@ -1,72 +1,120 @@
 import type { ReactNode } from 'react';
 
-import React from 'react';
+import React, { Context, createContext, useContext, useState } from 'react';
 
-import { useState } from 'react';
-
-interface AccordionOptions {
-  closeAllOthersOnExpand: boolean;  
+interface Actions {
+  select: () => void;
 }
 
-interface ChildrenProps<T> {
-  item: T,
-  meta: {
-    index: number;
-    active: boolean;
-    isLast: boolean;
-    isFirst: boolean;
-    onClick: () => void;
-  }
+interface Metadata {
+  index: number;
+  isLast: boolean;
+  isFirst: boolean;
+  isSelected: boolean;
+};
+
+interface AugmentedItem<T extends unknown[]> {
+  data: T[number];
+  actions: Actions;
+  metadata: Metadata;
 }
 
-interface AccordionProps <T>{
-  items: T[];
-  children: (props: ChildrenProps<T>) => ReactNode;
-  options?: Partial<AccordionOptions>;
+interface ComputedData<T extends unknown[]> {
+  hydratedItems: AugmentedItem<T>[];
+  selectedItem?: AugmentedItem<T>;
 }
 
-const defaultAccordionOptions = {
-  closeAllOthersOnExpand: false
+interface ProviderComponentProps<T extends unknown[]> {
+  items: T;
+  children: ReactNode;
 }
 
-export function Accordion<T = never>({ items, children, options = {} }: AccordionProps<T>) {
-  const [activeAccordions, setActiveAccordions] = useState<number[]>([]);
+interface ValuesComponentProps<T extends unknown[]> {
+  children: (props: ComputedData<T>) => ReactNode;
+}
 
-  const finalOptions = {
-    ...defaultAccordionOptions,
-    ...options
-  }
+interface MapComponentProps<T extends unknown[]> {
+  children: (props: AugmentedItem<T>) => ReactNode;
+}
 
-  const finalItems = items.map((item, index, payload) => {
-    const active = activeAccordions.includes(index);
-    const isLast = payload.length === index + 1;
-    const isFirst = index === 0;
+function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
+  return function SingleSelectListProvider({ items, children }: ProviderComponentProps<T>) {
+    const [activeItem, setActiveItem] = useState<number>();
 
-    const onClick = () => setActiveAccordions(current => {      
-      const exists = current.includes(index);
-      
-      if (finalOptions.closeAllOthersOnExpand) {
-        return exists ? [] : [index];
+    const hydratedItems = items.map((data, index, payload) => {
+      const isLast = payload.length === index + 1;
+      const isFirst = index === 0;
+      const isSelected = activeItem === index;
+
+      function select() {
+        return setActiveItem(index);
+      };
+
+      const actions = {
+        select
       }
 
-      const filtered = current.filter(item => item !== index);
+      const metadata = {
+        index,
+        isLast,
+        isFirst,
+        isSelected
+      }
 
-      return exists ? filtered : [...filtered, index];
+      return {
+        data,
+        actions,
+        metadata
+      }
     });
 
-    const meta = {
-      index,
-      active,
-      isLast,
-      isFirst,
-      onClick,
+    const selectedItem = activeItem !== undefined ? hydratedItems[activeItem] : undefined;
+
+    const value = {
+      selectedItem,
+      hydratedItems,
     }
 
-    return {
-      item,
-      meta
-    }
-  });
-
-  return <>{finalItems.map(item => children(item))}</>;
+    return <Context.Provider value={value}>{children}</Context.Provider>
+  }
 }
+
+function createHook<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
+  return function useSingleSelectList() {
+    const value = useContext(Context);
+    if (value === undefined) {
+      throw new Error('useSingleSelectList must be used within a SingleSelectListProvider');
+    }
+    return value;
+  }
+}
+
+function createValuesComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
+  const useSingleSelectList = createHook(Context);
+  return function SingleSelectListValuesComponent({ children }: ValuesComponentProps<T>) {
+    const { hydratedItems, selectedItem } = useSingleSelectList();
+    return <>{children({ hydratedItems, selectedItem })}</>
+  };
+}
+
+function createMapComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
+  const useSingleSelectList = createHook(Context);
+  return function SingleSelectListMapComponent({ children }: MapComponentProps<T>) {
+    const { hydratedItems } = useSingleSelectList();
+    return <>{hydratedItems.map(item => children(item))}</>;
+  };
+}
+
+export function createSingleSelectListComponent<T extends unknown[]>() {
+  const Context = createContext<undefined | ComputedData<T>>(undefined);
+
+  return {
+    useSingleSelectList: createHook(Context),
+    SingleSelectList: {
+      Provider: createProviderComponent(Context),
+      Values: createValuesComponent(Context),
+      Map: createMapComponent(Context),
+    },
+  };
+}
+
