@@ -4,27 +4,26 @@ import React from 'react';
 
 import { useState } from 'react';
 
-interface Meta {
+interface Actions {
+  select: () => void;
+}
+
+interface Metadata {
   index: number;
   isLast: boolean;
   isFirst: boolean;
-  onClick: () => void;
   isSelected: boolean;
 };
 
 interface AugmentedItem<T extends any[]> {
-  item: T[number];
-  meta: Meta;
+  data: T[number];
+  actions: Actions;
+  metadata: Metadata;
 }
 
 interface ComputedData<T extends any[]> {
   hydratedItems: AugmentedItem<T>[];
   selectedItems: AugmentedItem<T>[];
-}
-
-interface ComputedDataIterator<T extends any[]> {
-  item: T[number],
-  meta: Meta;
 }
 
 interface ProviderComponentProps<T extends any[]> {
@@ -37,36 +36,41 @@ interface ValuesComponentProps<T extends any[]> {
 }
 
 interface MapComponentProps<T extends any[]> {
-  children: (props: ComputedDataIterator<T>) => ReactNode;
+  children: (props: AugmentedItem<T>) => ReactNode;
 }
 
 function createProviderComponent<T extends any[]>(Context: Context<undefined | ComputedData<T>>) {
-
   return function MultiSelectListProvider({ items, children }: ProviderComponentProps<T>) {
     const [activeItems, setActiveItems] = useState<number[]>([]);
 
-    const hydratedItems = items.map((item, index, payload) => {
+    const hydratedItems = items.map((data, index, payload) => {
       const isLast = payload.length === index + 1;
       const isFirst = index === 0;
       const isSelected = activeItems.includes(index);
 
-      const onClick = () => setActiveItems(current => {
-        const exists = current.includes(index);
-        const filtered = current.filter(item => item !== index);
-        return exists ? filtered : [...filtered, index];
-      });
+      function select() {
+        return setActiveItems(current => {
+          const exists = current.includes(index);
+          const filtered = current.filter(item => item !== index);
+          return exists ? filtered : [...filtered, index];
+        })
+      };
 
-      const meta = {
+      const actions = {
+        select        
+      }
+
+      const metadata = {
         index,
         isLast,
         isFirst,
-        onClick,
         isSelected
       }
 
       return {
-        item,
-        meta
+        data,
+        actions,
+        metadata
       }
     });
 

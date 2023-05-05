@@ -13,12 +13,12 @@ export const Accordion = () => {
   return (
     <MultiSelectList.Provider items={items}>
       <MultiSelectList.Map>
-        {({ item, meta }) => (
-          <div onClick={meta.onClick}>
-            {item.name}
-            {meta.isSelected && (
+        {({ data, actions, metadata }) => (
+          <div onClick={actions.select}>
+            {data.name}
+            {metadata.isSelected && (
               <div>
-                {item.value}
+                {data.value}
               </div>
             )}
           </div>
