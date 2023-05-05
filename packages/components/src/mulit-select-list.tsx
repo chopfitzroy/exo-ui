@@ -1,4 +1,4 @@
-import type { ReactNode} from 'react';
+import type { ReactNode } from 'react';
 
 import React, { Context, createContext, useContext, useState } from 'react';
 
@@ -13,31 +13,31 @@ interface Metadata {
   isSelected: boolean;
 };
 
-interface AugmentedItem<T extends any[]> {
+interface AugmentedItem<T extends unknown[]> {
   data: T[number];
   actions: Actions;
   metadata: Metadata;
 }
 
-interface ComputedData<T extends any[]> {
+interface ComputedData<T extends unknown[]> {
   hydratedItems: AugmentedItem<T>[];
   selectedItems: AugmentedItem<T>[];
 }
 
-interface ProviderComponentProps<T extends any[]> {
+interface ProviderComponentProps<T extends unknown[]> {
   items: T;
   children: ReactNode;
 }
 
-interface ValuesComponentProps<T extends any[]> {
+interface ValuesComponentProps<T extends unknown[]> {
   children: (props: ComputedData<T>) => ReactNode;
 }
 
-interface MapComponentProps<T extends any[]> {
+interface MapComponentProps<T extends unknown[]> {
   children: (props: AugmentedItem<T>) => ReactNode;
 }
 
-function createProviderComponent<T extends any[]>(Context: Context<undefined | ComputedData<T>>) {
+function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
   return function MultiSelectListProvider({ items, children }: ProviderComponentProps<T>) {
     const [activeItems, setActiveItems] = useState<number[]>([]);
 
@@ -55,7 +55,7 @@ function createProviderComponent<T extends any[]>(Context: Context<undefined | C
       };
 
       const actions = {
-        select        
+        select
       }
 
       const metadata = {
@@ -72,7 +72,7 @@ function createProviderComponent<T extends any[]>(Context: Context<undefined | C
       }
     });
 
-    const selectedItems = activeItems.map(item => items[item]);
+    const selectedItems = activeItems.map(item => hydratedItems[item]);
 
     const value = {
       hydratedItems,
@@ -83,39 +83,33 @@ function createProviderComponent<T extends any[]>(Context: Context<undefined | C
   }
 }
 
-function createHook<T extends any[]>(Context: Context<undefined | ComputedData<T>>) {
+function createHook<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
   return function useMultiSelectList() {
     const value = useContext(Context);
-
     if (value === undefined) {
       throw new Error('useMultiSelectList must be used within a MultiSelectListProvider');
     }
-
     return value;
   }
 }
 
-function createValuesComponent<T extends any[]>(Context: Context<undefined | ComputedData<T>>) {
+function createValuesComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
   const useMultiSelectList = createHook(Context);
-
   return function MultiSelectListValuesComponent({ children }: ValuesComponentProps<T>) {
     const { hydratedItems, selectedItems } = useMultiSelectList();
-
     return <>{children({ hydratedItems, selectedItems })}</>
   };
 }
 
-function createMapComponent<T extends any[]>(Context: Context<undefined | ComputedData<T>>) {
+function createMapComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
   const useMultiSelectList = createHook(Context);
-
   return function MultiSelectListMapComponent({ children }: MapComponentProps<T>) {
     const { hydratedItems } = useMultiSelectList();
-
     return <>{hydratedItems.map(item => children(item))}</>;
   };
 }
 
-export function createMultiSelectListComponent<T extends any[]>() {
+export function createMultiSelectListComponent<T extends unknown[]>() {
   const Context = createContext<undefined | ComputedData<T>>(undefined);
 
   return {
