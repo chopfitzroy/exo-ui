@@ -1,25 +1,29 @@
 import { h as _ } from 'preact';
 
-import { Accordion as HeadlessAccordion } from 'components';
+import { createMultiSelectListComponent } from "components";
 
 const items = [{
   name: 'Header',
   value: 'Description'
 }];
 
+const { MultiSelectList } = createMultiSelectListComponent<typeof items>();
+
 export const Accordion = () => {
   return (
-    <HeadlessAccordion items={items}>
-      {({ item, meta }) => (
-        <div onClick={meta.onClick}>
-          {item.name}
-          {meta.active && (
-            <div>
-              {item.value}
-            </div>
-          )}
-        </div>
-      )}
-    </HeadlessAccordion>
+    <MultiSelectList.Provider items={items}>
+      <MultiSelectList.Map>
+        {({ item, meta }) => (
+          <div onClick={meta.onClick}>
+            {item.name}
+            {meta.isSelected && (
+              <div>
+                {item.value}
+              </div>
+            )}
+          </div>
+        )}
+      </MultiSelectList.Map>
+    </MultiSelectList.Provider>
   )
 }

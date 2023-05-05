@@ -12,35 +12,35 @@ interface Meta {
   isSelected: boolean;
 };
 
-interface AugmentedItem<T extends never[]> {
+interface AugmentedItem<T extends any[]> {
   item: T[number];
   meta: Meta;
 }
 
-interface ComputedData<T extends never[]> {
+interface ComputedData<T extends any[]> {
   hydratedItems: AugmentedItem<T>[];
   selectedItems: AugmentedItem<T>[];
 }
 
-interface ComputedDataIterator<T extends never[]> {
+interface ComputedDataIterator<T extends any[]> {
   item: T[number],
   meta: Meta;
 }
 
-interface ProviderComponentProps<T extends never[]> {
+interface ProviderComponentProps<T extends any[]> {
   items: T;
   children: ReactNode;
 }
 
-interface ValuesComponentProps<T extends never[]> {
+interface ValuesComponentProps<T extends any[]> {
   children: (props: ComputedData<T>) => ReactNode;
 }
 
-interface MapComponentProps<T extends never[]> {
+interface MapComponentProps<T extends any[]> {
   children: (props: ComputedDataIterator<T>) => ReactNode;
 }
 
-function createProviderComponent<T extends never[]>(Context: Context<undefined | ComputedData<T>>) {
+function createProviderComponent<T extends any[]>(Context: Context<undefined | ComputedData<T>>) {
 
   return function MultiSelectListProvider({ items, children }: ProviderComponentProps<T>) {
     const [activeItems, setActiveItems] = useState<number[]>([]);
@@ -82,7 +82,7 @@ function createProviderComponent<T extends never[]>(Context: Context<undefined |
 
 }
 
-function createHook<T extends never[]>(Context: Context<undefined | ComputedData<T>>) {
+function createHook<T extends any[]>(Context: Context<undefined | ComputedData<T>>) {
   return function useMultiSelectList() {
     const value = useContext(Context);
 
@@ -94,7 +94,7 @@ function createHook<T extends never[]>(Context: Context<undefined | ComputedData
   }
 }
 
-function createValuesComponent<T extends never[]>(Context: Context<undefined | ComputedData<T>>) {
+function createValuesComponent<T extends any[]>(Context: Context<undefined | ComputedData<T>>) {
   const useMultiSelectList = createHook(Context);
 
   return function MultiSelectListValuesComponent({ children }: ValuesComponentProps<T>) {
@@ -105,7 +105,7 @@ function createValuesComponent<T extends never[]>(Context: Context<undefined | C
 }
 
 
-function createMapComponent<T extends never[]>(Context: Context<undefined | ComputedData<T>>) {
+function createMapComponent<T extends any[]>(Context: Context<undefined | ComputedData<T>>) {
   const useMultiSelectList = createHook(Context);
 
   return function MultiSelectListMapComponent({ children }: MapComponentProps<T>) {
@@ -117,7 +117,7 @@ function createMapComponent<T extends never[]>(Context: Context<undefined | Comp
 
 
 
-export function createMultiSelectListComponent<T extends never[]>() {
+export function createMultiSelectListComponent<T extends any[]>() {
   const Context = createContext<undefined | ComputedData<T>>(undefined);
 
   return {
