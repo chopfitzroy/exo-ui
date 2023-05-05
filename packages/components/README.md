@@ -17,6 +17,7 @@ Goals of this library:
 - [ ] QuantityList (Shopping cart, etc...)
 - [ ] Pagination (Pagination, etc...)
 - [ ] Toggle (Modals, Dropdowns, etc...)
+- [ ] Queue (Multi step form, product tour, etc...)
 - [ ] Timer (Alerts, etc...)
 
 **Considering:**
