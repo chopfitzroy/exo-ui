@@ -2,6 +2,10 @@ import type { ReactNode } from 'react';
 
 import React, { Context, createContext, useContext, useState } from 'react';
 
+interface Options {
+  initiallySelectedItemsIndexes: number[];
+}
+
 interface Actions {
   select: () => void;
 }
@@ -27,6 +31,7 @@ interface ComputedData<T extends unknown[]> {
 interface ProviderComponentProps<T extends unknown[]> {
   items: T;
   children: ReactNode;
+  options?: Partial<Options>;
 }
 
 interface ValuesComponentProps<T extends unknown[]> {
@@ -37,9 +42,18 @@ interface MapComponentProps<T extends unknown[]> {
   children: (props: AugmentedItem<T>) => ReactNode;
 }
 
+const defaultOptions = {
+  initiallySelectedItemsIndexes: [],
+}
+
 function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
-  return function MultiSelectListProvider({ items, children }: ProviderComponentProps<T>) {
-    const [activeItems, setActiveItems] = useState<number[]>([]);
+  return function MultiSelectListProvider({ items, options, children }: ProviderComponentProps<T>) {
+    const optionsWithDefaults: Options = {
+      ...defaultOptions,
+      ...options
+    }
+    
+    const [activeItems, setActiveItems] = useState<number[]>(optionsWithDefaults.initiallySelectedItemsIndexes);
 
     const hydratedItems = items.map((data, index, payload) => {
       const isLast = payload.length === index + 1;
