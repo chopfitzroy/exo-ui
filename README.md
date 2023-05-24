@@ -4,7 +4,7 @@ Exo UI is a _workflow_ component library. It takes a _zero markup_ philosophy me
 
 It also means that Exo UI can be run with [React](https://react.dev/), [React Native](https://reactnative.dev/), and [Preact](https://preactjs.com/) making it highly versitile.
 
-Stiches does not require [Tailwind](https://tailwindcss.com/) to be used although they do pair quite nicely 🥂.
+Exo UI does not require [Tailwind](https://tailwindcss.com/) to be used although they do pair quite nicely 🥂.
 
 ### Build 🧰
 
