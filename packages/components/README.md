@@ -1,12 +1,14 @@
 # Components 📦
 
-Stitches components are **0 Markup** components that will help you create more composable user interfaces.
+Exo UI components are **0 Markup** workflow components that will help you create more composable user interfaces.
+
+Stop thinking about state and focus on data! 🎉
 
 Goals of this library:
 - 0 dependencies other than [React](https://react.dev/)
 - 0 Markup (this means it can be using with [React Native](https://reactnative.dev/))
 - Composable, you should be able to access data without the need to prop drill
-- Easily able to be copy/pasted, similar to how [Tailwind](https://tailwindcss.com/) code can be pasted into any project that uses Tailwind, Stitches should be able to be pasted into any project that use Stitches.
+- Easily able to be copy/pasted, similar to how [Tailwind](https://tailwindcss.com/) code can be pasted into any project that uses Tailwind, Exo UI code should be able to be pasted into any project that has Exo UI as a dependency.
 
 ### Components
 
@@ -27,9 +29,9 @@ Goals of this library:
 - [ ] Text masking - Something like date or financial formatting is a good example, would likely require 3rd party dependencies
 - [ ] Slider - The implementation for this is not obvious and it will be difficult to create nice ergonomics
 
-The above components can achieve all functionality provided by [Headless UI](https://headlessui.com/) and most of the functionality provided by [Radix UI](https://www.radix-ui.com/).
+Exo UI is not the same as [Headless UI](https://headlessui.com/) or [Radix UI](https://www.radix-ui.com/) as it is not responsible for any markup and instead focuses solely on UI state.
 
-It is worth noting both of these libraries place a _heavy_ emphasis on Accessibility which is not what Stitches is trying to do, and would technically be impossible seeing as we don't provide any markup.
+Theorethically Radix UI and Exo UI should pair quite nicely and we would eventually like to create some documentation surrounding how to achieve this.
 
 ### Limitations
 
@@ -37,7 +39,7 @@ Part of relying only on React means making use of [Context](https://react.dev/le
 
 The most important thing to understand is the use of `Provider` components and that these **must wrap** all child components, **including components that use any hooks that reference that context**.
 
-Stitches does it's best to provide explicit error messages that help to explain if a context issue has occured, that being said if you are unfamiliar with Context I recommend [reading up on it](https://react.dev/learn/passing-data-deeply-with-context).
+Exo UI does it's best to provide explicit error messages that help to explain if a context issue has occured, that being said if you are unfamiliar with Context I recommend [reading up on it](https://react.dev/learn/passing-data-deeply-with-context).
 
 ### Style Guide
 
