@@ -2,11 +2,11 @@ import type { ReactNode } from 'react';
 
 import React, { Context, createContext, useContext, useReducer } from 'react';
 
-type OnPageChangeSignatue<T extends unknown[]> = (item: T[number], index: number, current: T[number]) => void;
+type OnPageChangeSignatue<T extends unknown[]> = (item: T[number], index: number, previous: T[number]) => void;
 
 interface Options<T extends unknown[]> {
+	sliceBoundary: number;
 	initialPageIndex: number;
-	siblingAllowance: number;
 	onPageChange?: OnPageChangeSignatue<T>
 }
 
@@ -15,6 +15,7 @@ interface Actions {
 }
 
 interface Metadata {
+	page: number;
 	index: number;
 	isSelected: boolean;
 };
@@ -27,9 +28,10 @@ interface AugmentedItem<T extends unknown[]> {
 
 interface ComputedData<T extends unknown[]> {
 	hydratedItems: AugmentedItem<T>[];
+	hydratedSlice: AugmentedItem<T>[];
 	showPrevArrow: boolean;
 	showNextArrow: boolean;
-	hydratedSiblings: AugmentedItem<T>[];
+	activePageIndex: number;
 	goToPrevPageIndex: () => void;
 	goToNextPageIndex: () => void;
 	goToLastPageIndex: () => void;
@@ -37,7 +39,7 @@ interface ComputedData<T extends unknown[]> {
 }
 
 interface ProviderComponentProps<T extends unknown[]> {
-	items: T;
+	pages: T;
 	children: ReactNode;
 	options?: Partial<Options<T>>;
 }
@@ -47,14 +49,14 @@ interface ValuesComponentProps<T extends unknown[]> {
 }
 
 const defaultOptions = {
+	sliceBoundary: 3,
 	initialPageIndex: 0,
-	siblingAllowance: 3,
 };
 
 function createActiveItemReducer<T extends unknown[]>(items: T, callback?: OnPageChangeSignatue<T>) {
 	return function activeItemReducer(state: number, index: number) {
 		const item = items[index];
-		const current = items[state];
+		const previous = items[state];
 
 		if (callback === undefined) {
 			return index;
@@ -62,54 +64,55 @@ function createActiveItemReducer<T extends unknown[]>(items: T, callback?: OnPag
 
 		// @NOTE
 		// - Handle user provided side effect
-		callback(item, index, current);
+		callback(item, index, previous);
 
 		return index;
 	}
 }
 
 function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
-	return function MultiSelectListProvider({ items, options, children }: ProviderComponentProps<T>) {
+	return function MultiSelectListProvider({ pages, options, children }: ProviderComponentProps<T>) {
 		const optionsWithDefaults: Options<T> = {
 			...defaultOptions,
 			...options
 		}
 
-		const [activeItem, setActiveItem] = useReducer(
-			createActiveItemReducer<T>(items, optionsWithDefaults.onPageChange),
+		const [activePageIndex, setActivePageIndex] = useReducer(
+			createActiveItemReducer<T>(pages, optionsWithDefaults.onPageChange),
 			optionsWithDefaults.initialPageIndex
 		);
 
-		const showPrevArrow = activeItem !== 0;
-		const showNextArrow = activeItem !== items.length - 1;
+		const showPrevArrow = activePageIndex !== 0;
+		const showNextArrow = activePageIndex !== pages.length - 1;
 
-		const prevPageIndex = Math.max(0, activeItem - 1);
-		const nextPageIndex = Math.min(items.length - 1, activeItem + 1);
+		const prevPageIndex = Math.max(0, activePageIndex - 1);
+		const nextPageIndex = Math.min(pages.length - 1, activePageIndex + 1);
 
-		const leftSiblingsIndex = Math.max(0, activeItem - optionsWithDefaults.siblingAllowance);
-		const rightSiblingsIndex = Math.min(items.length - 1, activeItem + defaultOptions.siblingAllowance);
+		const leftSiblingsIndex = Math.max(0, activePageIndex - optionsWithDefaults.sliceBoundary);
+		const rightSiblingsIndex = Math.min(pages.length, activePageIndex + defaultOptions.sliceBoundary);
 
 		function goToPrevPageIndex() {
-			return setActiveItem(prevPageIndex);
+			return setActivePageIndex(prevPageIndex);
 		}
 
 		function goToNextPageIndex() {
-			return setActiveItem(nextPageIndex);
+			return setActivePageIndex(nextPageIndex);
 		}
 
 		function goToLastPageIndex() {
-			return setActiveItem(items.length - 1);
+			return setActivePageIndex(pages.length - 1);
 		}
 
 		function goToFirstPageIndex() {
-			return setActiveItem(0);
+			return setActivePageIndex(0);
 		}
 
-		const hydratedItems = items.map((data, index) => {
-			const isSelected = index === activeItem;
+		const hydratedItems = pages.map((data, index) => {
+			const page = index + 1;
+			const isSelected = index === activePageIndex;
 
 			function select() {
-				return setActiveItem(index)
+				return setActivePageIndex(index)
 			};
 
 			const actions = {
@@ -117,6 +120,7 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 			}
 
 			const metadata = {
+				page,
 				index,
 				isSelected
 			}
@@ -128,13 +132,14 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 			}
 		});
 
-		const hydratedSiblings = hydratedItems.slice(leftSiblingsIndex, rightSiblingsIndex);
+		const hydratedSlice = hydratedItems.slice(leftSiblingsIndex, rightSiblingsIndex);
 
 		const value = {
 			hydratedItems,
+			hydratedSlice,
 			showPrevArrow,
 			showNextArrow,
-			hydratedSiblings,
+			activePageIndex,
 			goToPrevPageIndex,
 			goToNextPageIndex,
 			goToLastPageIndex,
