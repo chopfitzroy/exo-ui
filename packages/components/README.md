@@ -14,9 +14,9 @@ Goals of this library:
 
 - [x] MultiSelectList (Accordions, Customisations, etc...)
 - [x] SingleSelectList (Carousels, etc...)
-- [ ] QuantityList (Shopping cart, etc...)
-- [ ] Pagination (Pagination, etc...)
+- [x] Pagination (Pagination, etc...)
 - [ ] Filtering (Categories, Search, etc...)
+- [ ] Carousel - Would include functions like next/previous as well as an optional rotation time
 - [ ] Toggle (Modals, Dropdowns, etc...)
 - [ ] Queue (Multi step form, product tour, etc...)
 - [ ] Timer (Alerts, etc...)
@@ -25,7 +25,6 @@ Goals of this library:
 
 - [ ] Text validation - Something like email validation is a good example, would likely require 3rd party dependencies, most likely [Zod](https://zod.dev/)
 - [ ] Text masking - Something like date or financial formatting is a good example, would likely require 3rd party dependencies
-- [ ] Carousel - This is really just an abstraction over `SingleSelectList` and may not be worth implementing
 - [ ] Slider - The implementation for this is not obvious and it will be difficult to create nice ergonomics
 
 The above components can achieve all functionality provided by [Headless UI](https://headlessui.com/) and most of the functionality provided by [Radix UI](https://www.radix-ui.com/).
