@@ -16,8 +16,6 @@ interface Actions {
 
 interface Metadata {
 	index: number;
-	isLast: boolean;
-	isFirst: boolean;
 	isSelected: boolean;
 };
 
@@ -107,9 +105,7 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 			return setActiveItem(0);
 		}
 
-		const hydratedItems = items.map((data, index, payload) => {
-			const isLast = payload.length === index + 1;
-			const isFirst = index === 0;
+		const hydratedItems = items.map((data, index) => {
 			const isSelected = index === activeItem;
 
 			function select() {
@@ -122,8 +118,6 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 
 			const metadata = {
 				index,
-				isLast,
-				isFirst,
 				isSelected
 			}
 
