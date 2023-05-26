@@ -5,29 +5,34 @@ Exo UI components are **0 Markup** workflow components that will help you create
 Stop thinking about state and focus on data! 🎉
 
 Goals of this library:
-- 0 dependencies other than [React](https://react.dev/)
 - 0 Markup (this means it can be using with [React Native](https://reactnative.dev/))
 - Composable, you should be able to access data without the need to prop drill
 - Easily able to be copy/pasted, similar to how [Tailwind](https://tailwindcss.com/) code can be pasted into any project that uses Tailwind, Exo UI code should be able to be pasted into any project that has Exo UI as a dependency.
 
 ### Components
 
-**In progress:**
+Simple components have no dependencies other than [React](https://react.dev/). Complex components have other dependencies specified.
 
-- [x] MultiSelectList (Accordions, Customisations, etc...)
-- [x] SingleSelectList (Carousels, etc...)
+**Simple:**
+
+- [x] SingleSelectList (Accordions, etc...)
+- [x] MultiSelectList (Filters, etc...)
 - [x] Pagination (Pagination, etc...)
-- [ ] Filtering (Categories, Search, etc...)
 - [ ] Carousel - Would include functions like next/previous as well as an optional rotation time
 - [ ] Toggle (Modals, Dropdowns, etc...)
-- [ ] Queue (Multi step form, product tour, etc...)
-- [ ] Timer (Alerts, etc...)
+- [ ] Queue (Alerts, etc...)
+
+**Complex:**
+
+- [ ] Finite State (Multi step form, product tour, etc...) - Requires [`@xstate/fsm`](https://xstate.js.org/docs/packages/xstate-fsm/) (minimal implmentation with less features)
+- [ ] Matches (Text search, etc...) - Requires [`oramasearch/orama`](https://docs.oramasearch.com/)
 
 **Considering:**
 
 - [ ] Text validation - Something like email validation is a good example, would likely require 3rd party dependencies, most likely [Zod](https://zod.dev/)
 - [ ] Text masking - Something like date or financial formatting is a good example, would likely require 3rd party dependencies
-- [ ] Slider - The implementation for this is not obvious and it will be difficult to create nice ergonomics
+- [ ] Range (slider) - The implementation for this is not obvious and it will be difficult to create nice ergonomics
+- [ ] Progress (stepper, loading, rating, etc...) - This would need to be really diverse in order to be useful
 
 Exo UI is not the same as [Headless UI](https://headlessui.com/) or [Radix UI](https://www.radix-ui.com/) as it is not responsible for any markup and instead focuses solely on UI state.
 
