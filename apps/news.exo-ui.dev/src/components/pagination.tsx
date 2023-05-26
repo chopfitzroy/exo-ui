@@ -18,45 +18,53 @@ const pages = [{
 	content: 'Description five'
 }];
 
-const { Pagination: Control } = createPaginationComponent<typeof pages>();
+const { Pagination: Control } = createPaginationComponent();
 
 export const Pagination = () => {
 	return (
-		<Control.Provider pages={pages} options={{
-			onPageChange: (item, index, previous) => console.log({ item, index, previous }),
+		<Control.Provider count={pages.length} options={{
+			onPageChange: (next, previous) => console.log({ next, previous }),
 			sliceBoundary: 1,
 		}}>
 			<>
 				<Control.Values>
-					{({ activePageIndex }) => (
-						<p>{pages[activePageIndex]?.name}</p>
+					{({ activePage }) => (
+						<p>{pages[activePage - 1]?.name}</p>
 					)}
 				</Control.Values>
 				<div>
 					<Control.Values>
-						{({ hydratedSlice, isExcessPagesLeft, isExcessPagesRight, goToPrevPageIndex, goToNextPageIndex, goToLastPageIndex, goToFirstPageIndex }) => (
+						{({ 
+							goToNextPage,
+							goToPrevPage,
+							goToLastPage,
+							goToFirstPage,
+							hydratedSlice, 
+							isExcessPagesLeft,
+							isExcessPagesRight,
+						}) => (
 							<>
-								<button onClick={goToFirstPageIndex}>
+								<button onClick={goToFirstPage}>
 									Start
 								</button>
-								<button onClick={goToPrevPageIndex}>
+								<button onClick={goToPrevPage}>
 									Back
 								</button>
 								{isExcessPagesLeft && (
 									<span>...</span>
 								)}
 								{hydratedSlice.map(item => (
-									<button key={item.metadata.index} onClick={item.actions.select} style={{ backgroundColor: item.metadata.isSelected ? 'lime' : 'white'}}>
-										{item.metadata.page}
+									<button key={item.data} onClick={item.actions.select} style={{ backgroundColor: item.metadata.isSelected ? 'lime' : 'white'}}>
+										{item.data}
 									</button>
 								))}
 								{isExcessPagesRight && (
 									<span>...</span>
 								)}
-								<button onClick={goToNextPageIndex}>
+								<button onClick={goToNextPage}>
 									Forward
 								</button>
-								<button onClick={goToLastPageIndex}>
+								<button onClick={goToLastPage}>
 									End
 								</button>
 							</>

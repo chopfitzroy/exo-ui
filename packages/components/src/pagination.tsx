@@ -2,12 +2,12 @@ import type { ReactNode } from 'react';
 
 import React, { Context, createContext, useContext, useReducer } from 'react';
 
-type OnPageChangeSignatue<T extends unknown[]> = (item: T[number], index: number, previous: T[number]) => void;
+type OnPageChangeSignatue = (next: number, previous: number) => void;
 
-interface Options<T extends unknown[]> {
+interface Options {
 	sliceBoundary: number;
-	initialPageIndex: number;
-	onPageChange?: OnPageChangeSignatue<T>
+	initialPage: number;
+	onPageChange?: OnPageChangeSignatue
 }
 
 interface Actions {
@@ -15,152 +15,143 @@ interface Actions {
 }
 
 interface Metadata {
-	page: number;
-	index: number;
 	isSelected: boolean;
 };
 
-interface AugmentedItem<T extends unknown[]> {
-	data: T[number];
+interface AugmentedItem {
+	data: number;
 	actions: Actions;
 	metadata: Metadata;
 }
 
-interface ComputedData<T extends unknown[]> {
-	hydratedItems: AugmentedItem<T>[];
-	hydratedSlice: AugmentedItem<T>[];
+interface ComputedData {
+	activePage: number;
+	goToPrevPage: () => void;
+	goToNextPage: () => void;
+	goToLastPage: () => void;
+	goToFirstPage: () => void;
+	hydratedItems: AugmentedItem[];
+	hydratedSlice: AugmentedItem[];
 	showPrevArrow: boolean;
 	showNextArrow: boolean;
-	activePageIndex: number;
 	isExcessPagesLeft: boolean;
 	isExcessPagesRight: boolean;
-	goToPrevPageIndex: () => void;
-	goToNextPageIndex: () => void;
-	goToLastPageIndex: () => void;
-	goToFirstPageIndex: () => void;
 }
 
-interface ProviderComponentProps<T extends unknown[]> {
-	pages: T;
+interface ProviderComponentProps {
+	count: number;
 	children: ReactNode;
-	options?: Partial<Options<T>>;
+	options?: Partial<Options>;
 }
 
-interface ValuesComponentProps<T extends unknown[]> {
-	children: (props: ComputedData<T>) => ReactNode;
+interface ValuesComponentProps {
+	children: (props: ComputedData) => ReactNode;
 }
 
 const defaultOptions = {
 	sliceBoundary: 3,
-	initialPageIndex: 0,
+	initialPage: 1,
 };
 
-function createActiveItemReducer<T extends unknown[]>(items: T, callback?: OnPageChangeSignatue<T>) {
-	return function activeItemReducer(state: number, index: number) {
-		const item = items[index];
-		const previous = items[state];
-
+function createActiveItemReducer(callback?: OnPageChangeSignatue) {
+	return function activeItemReducer(previous: number, next: number) {
 		if (callback === undefined) {
-			return index;
+			return next;
 		}
 
 		// @NOTE
 		// - Handle user provided side effect
-		callback(item, index, previous);
+		callback(next, previous);
 
-		return index;
+		return next;
 	}
 }
 
-function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
-	return function MultiSelectListProvider({ pages, options, children }: ProviderComponentProps<T>) {
-		const optionsWithDefaults: Options<T> = {
+function createProviderComponent(Context: Context<undefined | ComputedData>) {
+	return function MultiSelectListProvider({ count, options, children }: ProviderComponentProps) {
+		const optionsWithDefaults: Options = {
 			...defaultOptions,
 			...options
 		}
 
-		const [activePageIndex, setActivePageIndex] = useReducer(
-			createActiveItemReducer<T>(pages, optionsWithDefaults.onPageChange),
-			optionsWithDefaults.initialPageIndex
+		const [activePage, setActivePage] = useReducer(
+			createActiveItemReducer(optionsWithDefaults.onPageChange),
+			optionsWithDefaults.initialPage
 		);
 
-		const showPrevArrow = activePageIndex !== 0;
-		const showNextArrow = activePageIndex !== pages.length - 1;
+		const showPrevArrow = activePage !== 1;
+		const showNextArrow = activePage !== count;
 
-		const prevPageIndex = Math.max(0, activePageIndex - 1);
-		const nextPageIndex = Math.min(pages.length - 1, activePageIndex + 1);
+		const prevPage = Math.max(1, activePage - 1);
+		const nextPage = Math.min(count, activePage + 1);
 
-		const leftSiblingsIndex = Math.max(0, activePageIndex - optionsWithDefaults.sliceBoundary);
+		const leftSiblings = Math.max(0, prevPage - optionsWithDefaults.sliceBoundary);
+		const rightSiblings = Math.min(count, activePage + optionsWithDefaults.sliceBoundary);
 
-		// @NOTE
-		// - Use `nextPageIndex` here to account for the `+1`
-		const rightSiblingsIndex = Math.min(pages.length, nextPageIndex + optionsWithDefaults.sliceBoundary);
+		const isExcessPagesLeft = leftSiblings > 0;
+		const isExcessPagesRight = rightSiblings < count;
 
-		const isExcessPagesLeft = leftSiblingsIndex > 0;
-		const isExcessPagesRight = rightSiblingsIndex < pages.length;
-	
-		function goToPrevPageIndex() {
-			return setActivePageIndex(prevPageIndex);
+		function goToPrevPage() {
+			return setActivePage(prevPage);
 		}
 
-		function goToNextPageIndex() {
-			return setActivePageIndex(nextPageIndex);
+		function goToNextPage() {
+			return setActivePage(nextPage);
 		}
 
-		function goToLastPageIndex() {
-			return setActivePageIndex(pages.length - 1);
+		function goToLastPage() {
+			return setActivePage(count);
 		}
 
-		function goToFirstPageIndex() {
-			return setActivePageIndex(0);
+		function goToFirstPage() {
+			return setActivePage(1);
 		}
 
-		const hydratedItems = pages.map((data, index) => {
-			const page = index + 1;
-			const isSelected = index === activePageIndex;
+		const hydratedItems = [...Array(count).keys()]
+			.map((key) => key + 1)
+			.map(data => {
+				const isSelected = data === activePage;
 
-			function select() {
-				return setActivePageIndex(index)
-			};
+				function select() {
+					return setActivePage(data)
+				};
 
-			const actions = {
-				select
-			}
+				const actions = {
+					select
+				}
 
-			const metadata = {
-				page,
-				index,
-				isSelected
-			}
+				const metadata = {
+					isSelected
+				}
 
-			return {
-				data,
-				actions,
-				metadata
-			}
-		});
+				return {
+					data,
+					actions,
+					metadata
+				}
+			});
 
-		const hydratedSlice = hydratedItems.slice(leftSiblingsIndex, rightSiblingsIndex);
+		const hydratedSlice = hydratedItems.slice(leftSiblings, rightSiblings);
 
 		const value = {
+			activePage,
+			goToPrevPage,
+			goToNextPage,
+			goToLastPage,
+			goToFirstPage,
 			hydratedItems,
 			hydratedSlice,
 			showPrevArrow,
 			showNextArrow,
-			activePageIndex,
 			isExcessPagesLeft,
 			isExcessPagesRight,
-			goToPrevPageIndex,
-			goToNextPageIndex,
-			goToLastPageIndex,
-			goToFirstPageIndex
 		}
 
 		return <Context.Provider value={value}>{children}</Context.Provider>
 	}
 }
 
-function createHook<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
+function createHook(Context: Context<undefined | ComputedData>) {
 	return function usePagination() {
 		const value = useContext(Context);
 		if (value === undefined) {
@@ -170,16 +161,16 @@ function createHook<T extends unknown[]>(Context: Context<undefined | ComputedDa
 	}
 }
 
-function createValuesComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
+function createValuesComponent(Context: Context<undefined | ComputedData>) {
 	const usePagination = createHook(Context);
-	return function PaginationValuesComponent({ children }: ValuesComponentProps<T>) {
+	return function PaginationValuesComponent({ children }: ValuesComponentProps) {
 		const values = usePagination();
 		return <>{children(values)}</>
 	};
 }
 
-export function createPaginationComponent<T extends unknown[]>() {
-	const Context = createContext<undefined | ComputedData<T>>(undefined);
+export function createPaginationComponent() {
+	const Context = createContext<undefined | ComputedData>(undefined);
 
 	return {
 		usePagination: createHook(Context),
