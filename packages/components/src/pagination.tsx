@@ -32,6 +32,8 @@ interface ComputedData<T extends unknown[]> {
 	showPrevArrow: boolean;
 	showNextArrow: boolean;
 	activePageIndex: number;
+	isExcessPagesLeft: boolean;
+	isExcessPagesRight: boolean;
 	goToPrevPageIndex: () => void;
 	goToNextPageIndex: () => void;
 	goToLastPageIndex: () => void;
@@ -89,8 +91,14 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 		const nextPageIndex = Math.min(pages.length - 1, activePageIndex + 1);
 
 		const leftSiblingsIndex = Math.max(0, activePageIndex - optionsWithDefaults.sliceBoundary);
-		const rightSiblingsIndex = Math.min(pages.length, activePageIndex + defaultOptions.sliceBoundary);
 
+		// @NOTE
+		// - Use `nextPageIndex` here to account for the `+1`
+		const rightSiblingsIndex = Math.min(pages.length, nextPageIndex + optionsWithDefaults.sliceBoundary);
+
+		const isExcessPagesLeft = leftSiblingsIndex > 0;
+		const isExcessPagesRight = rightSiblingsIndex < pages.length;
+	
 		function goToPrevPageIndex() {
 			return setActivePageIndex(prevPageIndex);
 		}
@@ -140,6 +148,8 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 			showPrevArrow,
 			showNextArrow,
 			activePageIndex,
+			isExcessPagesLeft,
+			isExcessPagesRight,
 			goToPrevPageIndex,
 			goToNextPageIndex,
 			goToLastPageIndex,
