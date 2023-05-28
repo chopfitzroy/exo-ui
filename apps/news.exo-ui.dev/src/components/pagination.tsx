@@ -54,8 +54,8 @@ export const Pagination = () => {
 									<span>...</span>
 								)}
 								{hydratedSlice.map(item => (
-									<button key={item.data} onClick={item.actions.select} style={{ backgroundColor: item.metadata.isSelected ? 'lime' : 'white'}}>
-										{item.data}
+									<button key={item.data.page} onClick={item.actions.select} style={{ backgroundColor: item.metadata.isSelected ? 'lime' : 'white'}}>
+										{item.data.page}
 									</button>
 								))}
 								{isExcessPagesRight && (

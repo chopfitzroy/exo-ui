@@ -4,6 +4,10 @@ import React, { Context, createContext, useContext, useReducer } from 'react';
 
 type OnPageChangeSignatue = (next: number, previous: number) => void;
 
+interface Data {
+  page: number;
+}
+
 interface Options {
 	sliceBoundary: number;
 	initialPage: number;
@@ -15,11 +19,14 @@ interface Actions {
 }
 
 interface Metadata {
+	index: number;
+	isLast: boolean;
+	isFirst: boolean;
 	isSelected: boolean;
 };
 
 interface AugmentedItem {
-	data: number;
+	data: Data;
 	actions: Actions;
 	metadata: Metadata;
 }
@@ -109,19 +116,28 @@ function createProviderComponent(Context: Context<undefined | ComputedData>) {
 
 		const hydratedItems = [...Array(count).keys()]
 			.map((key) => key + 1)
-			.map(data => {
-				const isSelected = data === activePage;
+			.map((page, index, payload) => {
+				const isLast = payload.length === index + 1;
+				const isFirst = index === 0;
+				const isSelected = page === activePage;
 
 				function select() {
-					return setActivePage(data)
+					return setActivePage(page)
 				};
 
+				const data = {
+					page,
+				}
+
 				const actions = {
-					select
+					select,
 				}
 
 				const metadata = {
-					isSelected
+					index,
+					isLast,
+					isFirst,
+					isSelected,
 				}
 
 				return {
