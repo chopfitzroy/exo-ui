@@ -13,7 +13,9 @@ interface Options {
 }
 
 interface Actions {
+	next: () => void;
 	select: () => void;
+	previous: () => void;
 }
 
 interface Metadata {
@@ -94,8 +96,34 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 				});
 			};
 
+			function next() {
+				return setActiveSlide({
+					setter: () => {
+						const increment = index + 1;
+						// @NOTE
+						// - Loop back round to `0` if at end of list
+						return increment >= payload.length ? 0 : increment;
+					},
+					callback: optionsWithDefaults.onNextSlide
+				});
+			}
+
+			function previous() {
+				return setActiveSlide({
+					setter: () => {
+						const decrement = index - 1;
+						// @NOTE
+						// - Loop back round to end of list if at start of list
+						return decrement >= 0 ? decrement : payload.length - 1;
+					},
+					callback: optionsWithDefaults.onPrevSlide
+				})
+			}
+
 			const actions = {
-				select
+				next,
+				select,
+				previous,
 			}
 
 			const metadata = {
