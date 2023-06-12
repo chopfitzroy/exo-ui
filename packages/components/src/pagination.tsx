@@ -2,16 +2,20 @@ import type { ReactNode } from 'react';
 
 import React, { Context, createContext, useContext, useReducer } from 'react';
 
-type OnPageChangeSignatue = (next: number, previous: number) => void;
+type SetPageCallback = (page: number) => void;
 
 interface Data {
-  page: number;
+	page: number;
 }
 
 interface Options {
 	sliceBoundary: number;
 	initialPage: number;
-	onPageChange?: OnPageChangeSignatue
+	onSelect?: SetPageCallback;
+	onGoToPrevPage?: SetPageCallback;
+	onGoToNextPage?: SetPageCallback;
+	onGoToLastPage?: SetPageCallback;
+	onGoToFirstPage?: SetPageCallback;
 }
 
 interface Actions {
@@ -60,17 +64,22 @@ const defaultOptions = {
 	initialPage: 1,
 };
 
-function createActiveItemReducer(callback?: OnPageChangeSignatue) {
-	return function activeItemReducer(previous: number, next: number) {
-		if (callback === undefined) {
-			return next;
-		}
+interface SetActivePageParams {
+	setter: (current: number) => number;
+	callback?: SetPageCallback
+}
+
+function createActivePageReducer() {
+	return function setActiveSlideReducer(state: number, { setter, callback }: SetActivePageParams) {
+		const page = setter(state);
 
 		// @NOTE
-		// - Handle user provided side effect
-		callback(next, previous);
+		// - Call all user defined callbacks
+		if (callback !== undefined) {
+			callback(page)
+		}
 
-		return next;
+		return page;
 	}
 }
 
@@ -82,7 +91,7 @@ function createProviderComponent(Context: Context<undefined | ComputedData>) {
 		}
 
 		const [activePage, setActivePage] = useReducer(
-			createActiveItemReducer(optionsWithDefaults.onPageChange),
+			createActivePageReducer(),
 			optionsWithDefaults.initialPage
 		);
 
@@ -99,19 +108,31 @@ function createProviderComponent(Context: Context<undefined | ComputedData>) {
 		const isExcessPagesRight = rightSiblings < count;
 
 		function goToPrevPage() {
-			return setActivePage(prevPage);
+			return setActivePage({
+				setter: () => prevPage,
+				callback: optionsWithDefaults.onGoToPrevPage,
+			});
 		}
 
 		function goToNextPage() {
-			return setActivePage(nextPage);
+			return setActivePage({
+				setter: () => nextPage,
+				callback: optionsWithDefaults.onGoToNextPage,
+			});
 		}
 
 		function goToLastPage() {
-			return setActivePage(count);
+			return setActivePage({
+				setter: () => count,
+				callback: optionsWithDefaults.onGoToLastPage,
+			});
 		}
 
 		function goToFirstPage() {
-			return setActivePage(1);
+			return setActivePage({
+				setter: () => 1,
+				callback: optionsWithDefaults.onGoToFirstPage,
+			});
 		}
 
 		const hydratedItems = [...Array(count).keys()]
@@ -122,7 +143,10 @@ function createProviderComponent(Context: Context<undefined | ComputedData>) {
 				const isSelected = page === activePage;
 
 				function select() {
-					return setActivePage(page)
+					return setActivePage({
+						setter: () => page,
+						callback: optionsWithDefaults.onSelect
+					})
 				};
 
 				const data = {

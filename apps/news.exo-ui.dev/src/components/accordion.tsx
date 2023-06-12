@@ -1,6 +1,6 @@
 import { h as _ } from 'preact';
 
-import { createMultiSelectListComponent } from "components";
+import { createSingleSelectListComponent } from "components";
 
 const items = [{
   name: 'Header one',
@@ -13,14 +13,14 @@ const items = [{
   value: 'Description three'
 }];
 
-const { MultiSelectList } = createMultiSelectListComponent<typeof items>();
+const { SingleSelectList  } = createSingleSelectListComponent<typeof items>();
 
 export const Accordion = () => {
   return (
-    <MultiSelectList.Provider items={items} options={{
-      initiallySelectedItemsIndexes: [0, 2]
+    <SingleSelectList.Provider items={items} options={{
+      onSelect: (item, index, array) => console.log({ item, index, array}),
     }}>
-      <MultiSelectList.Map>
+      <SingleSelectList.Map>
         {({ data, actions, metadata }) => (
           <div onClick={actions.select}>
             {data.name}
@@ -31,7 +31,7 @@ export const Accordion = () => {
             )}
           </div>
         )}
-      </MultiSelectList.Map>
-    </MultiSelectList.Provider>
+      </SingleSelectList.Map>
+    </SingleSelectList.Provider>
   )
 }

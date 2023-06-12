@@ -5,11 +5,11 @@ import React, { Context, createContext, useContext } from 'react';
 
 type ActiveSlideCallback<T extends unknown[]> = (item: T[number], index: number, array: T) => void;
 
-interface Options {
+interface Options <T extends unknown[]>{
 	initiallySelectedSlideIndex: number;
-	onNextSlide?: () => void;
-	onPrevSlide?: () => void;
-	onSelectSlide?: () => void;
+	onNextSlide?: ActiveSlideCallback<T>;
+	onPrevSlide?: ActiveSlideCallback<T>;
+	onSelectSlide?: ActiveSlideCallback<T>;
 }
 
 interface Actions {
@@ -39,7 +39,7 @@ interface ComputedData<T extends unknown[]> {
 interface ProviderComponentProps<T extends unknown[]> {
 	items: T;
 	children: ReactNode;
-	options?: Partial<Options>;
+	options?: Partial<Options<T>>;
 }
 
 interface ValuesComponentProps<T extends unknown[]> {
@@ -50,15 +50,13 @@ interface MapComponentProps<T extends unknown[]> {
 	children: (props: AugmentedItem<T>) => ReactNode;
 }
 
-interface SetActivSlideParams<T extends unknown[]> {
+interface SetActiveSlideParams<T extends unknown[]> {
 	setter: (current: number) => number;
 	callback?: (ActiveSlideCallback<T>);
 }
 
-// @TODO
-// - Recreate this behavious in `SelectList` and `Pagination`
 function createSetActiveSlideReducer<T extends unknown[]>(array: T) {
-	return function setActiveSlideReducer(state: number, { setter, callback }: SetActivSlideParams<T>) {
+	return function setActiveSlideReducer(state: number, { setter, callback }: SetActiveSlideParams<T>) {
 		const index = setter(state);
 
 		// @NOTE
@@ -77,7 +75,7 @@ const defaultOptions = {
 
 function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
 	return function CarouselProvider({ items, options, children }: ProviderComponentProps<T>) {
-		const optionsWithDefaults: Options = {
+		const optionsWithDefaults: Options<T> = {
 			...defaultOptions,
 			...options
 		}

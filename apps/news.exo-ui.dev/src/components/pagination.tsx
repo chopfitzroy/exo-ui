@@ -23,7 +23,11 @@ const { Pagination: Control } = createPaginationComponent();
 export const Pagination = () => {
 	return (
 		<Control.Provider count={pages.length} options={{
-			onPageChange: (next, previous) => console.log({ next, previous }),
+			onSelect: (page) => console.log(`onSelect: ${page}`),
+			onGoToNextPage: (page) => console.log(`onGoToNextPage: ${page}`),
+			onGoToPrevPage: (page) => console.log(`onGoToPrevPage: ${page}`),
+			onGoToLastPage: (page) => console.log(`onGoToLastPage: ${page}`),
+			onGoToFirstPage: (page) => console.log(`onGoToFirstPage: ${page}`),
 			sliceBoundary: 1,
 		}}>
 			<>
