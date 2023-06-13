@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import React, { Context, createContext, useContext, useReducer } from 'react';
 
-type SetPageCallback = (page: number) => void;
+type ActivePageCallback = (page: number) => void;
 
 interface Data {
 	page: number;
@@ -11,11 +11,11 @@ interface Data {
 interface Options {
 	sliceBoundary: number;
 	initialPage: number;
-	onSelect?: SetPageCallback;
-	onGoToPrevPage?: SetPageCallback;
-	onGoToNextPage?: SetPageCallback;
-	onGoToLastPage?: SetPageCallback;
-	onGoToFirstPage?: SetPageCallback;
+	onSelect?: ActivePageCallback;
+	onGoToPrevPage?: ActivePageCallback;
+	onGoToNextPage?: ActivePageCallback;
+	onGoToLastPage?: ActivePageCallback;
+	onGoToFirstPage?: ActivePageCallback;
 }
 
 interface Actions {
@@ -66,7 +66,7 @@ const defaultOptions = {
 
 interface SetActivePageParams {
 	setter: (current: number) => number;
-	callback?: SetPageCallback
+	callback?: ActivePageCallback
 }
 
 function createActivePageReducer() {

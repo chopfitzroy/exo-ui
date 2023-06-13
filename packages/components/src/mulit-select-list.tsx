@@ -1,9 +1,12 @@
 import type { ReactNode } from 'react';
 
-import React, { Context, createContext, useContext, useState } from 'react';
+import React, { Context, createContext, useContext, useReducer } from 'react';
 
-interface Options {
-  initiallySelectedItemsIndexes: number[];
+type ActiveItemsCallback<T extends unknown[]> = (item: T[number][], index: number[], array: T) => void;
+
+interface Options <T extends unknown[]>{
+  initiallySelectedItemsIndex: number[];
+  onSelect?: ActiveItemsCallback<T>
 }
 
 interface Actions {
@@ -31,7 +34,7 @@ interface ComputedData<T extends unknown[]> {
 interface ProviderComponentProps<T extends unknown[]> {
   items: T;
   children: ReactNode;
-  options?: Partial<Options>;
+  options?: Partial<Options<T>>;
 }
 
 interface ValuesComponentProps<T extends unknown[]> {
@@ -42,18 +45,37 @@ interface MapComponentProps<T extends unknown[]> {
   children: (props: AugmentedItem<T>) => ReactNode;
 }
 
+interface SetActiveItemsParams<T extends unknown[]> {
+  setter: (current: number[]) => number[];
+  callback?: (ActiveItemsCallback<T>);
+}
+
+function createSetActiveItemsReducer<T extends unknown[]>(array: T) {
+  return function setActiveItemsReducer(state: number[], { setter, callback }: SetActiveItemsParams<T>) {
+    const index = setter(state);
+
+    // @NOTE
+    // - Call all user defined callbacks
+    if (callback !== undefined) {
+      callback(index.map(index => array[index]), index, array)
+    }
+
+    return index;
+  }
+}
+
 const defaultOptions = {
-  initiallySelectedItemsIndexes: [],
+  initiallySelectedItemsIndex: [],
 }
 
 function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
   return function MultiSelectListProvider({ items, options, children }: ProviderComponentProps<T>) {
-    const optionsWithDefaults: Options = {
+    const optionsWithDefaults: Options<T> = {
       ...defaultOptions,
       ...options
     }
-    
-    const [activeItems, setActiveItems] = useState<number[]>(optionsWithDefaults.initiallySelectedItemsIndexes);
+
+    const [activeItems, setActiveItems] = useReducer(createSetActiveItemsReducer(items), optionsWithDefaults.initiallySelectedItemsIndex);
 
     const hydratedItems = items.map((data, index, payload) => {
       const isLast = payload.length === index + 1;
@@ -61,10 +83,13 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
       const isSelected = activeItems.includes(index);
 
       function select() {
-        return setActiveItems(current => {
-          const exists = current.includes(index);
-          const filtered = current.filter(item => item !== index);
-          return exists ? filtered : [...filtered, index];
+        return setActiveItems({
+          setter: current => {
+            const exists = current.includes(index);
+            const filtered = current.filter(item => item !== index);
+            return exists ? filtered : [...filtered, index];
+          },
+          callback: optionsWithDefaults.onSelect
         })
       };
 

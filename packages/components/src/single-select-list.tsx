@@ -50,8 +50,6 @@ interface SetActiveItemParams<T extends unknown[]> {
 	callback?: (ActiveItemCallback<T>);
 }
 
-// @TODO
-// - Recreate this behavious in `SelectList` and `Pagination`
 function createSetActiveItemReducer<T extends unknown[]>(array: T) {
 	return function setActiveItemReducer(state: number, { setter, callback }: SetActiveItemParams<T>) {
 		const index = setter(state);
@@ -86,7 +84,7 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 
       function select() {
         return setActiveItem({
-          setter: () => index,
+          setter: (current) => current !== index ? index : -1,
           callback: optionsWithDefaults.onSelect
         });
       };
