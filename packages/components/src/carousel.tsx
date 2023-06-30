@@ -1,10 +1,12 @@
-import type { ReactNode } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo } from 'react';
 
 import React, { Context, createContext, useContext, useReducer } from 'react';
 
 type ActiveSlideCallback<T extends unknown[]> = (item: T[number], index: number, resource: T) => void;
 
 interface Options<T extends unknown[]> {
+	autoRotate: boolean;
+	rotateDelay: number;
 	initiallySelectedSlideIndex: number;
 	onNextSlide?: ActiveSlideCallback<T>;
 	onPrevSlide?: ActiveSlideCallback<T>;
@@ -12,9 +14,7 @@ interface Options<T extends unknown[]> {
 }
 
 interface Actions {
-	next: () => void;
 	select: () => void;
-	previous: () => void;
 }
 
 interface Metadata {
@@ -31,6 +31,8 @@ interface AugmentedItem<T extends unknown[]> {
 }
 
 interface ComputedData<T extends unknown[]> {
+	next: () => void;
+	previous: () => void;
 	hydratedItems: AugmentedItem<T>[];
 	selectedItem?: AugmentedItem<T>;
 }
@@ -69,23 +71,51 @@ function createSetActiveSlideReducer<T extends unknown[]>(resource: T) {
 }
 
 const defaultOptions = {
+	autoRotate: true,
+	rotateDelay: 3_000,
 	initiallySelectedSlideIndex: 0
 };
 
+// @NOTE
+// - Because this component can invoke a `useEffect`
+// - We need to memo more often than we normally would
 function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
 	return function CarouselProvider({ items, options, children }: ProviderComponentProps<T>) {
-		const optionsWithDefaults: Options<T> = {
+		const optionsWithDefaults: Options<T> = useMemo(() => ({
 			...defaultOptions,
 			...options
-		}
+		}), [options])
 
 		const [activeSlide, setActiveSlide] = useReducer(createSetActiveSlideReducer(items), optionsWithDefaults.initiallySelectedSlideIndex);
+
+		const decrement = useMemo(() => activeSlide - 1, [activeSlide]);
+		const increment = useMemo(() => activeSlide + 1, [activeSlide]);
+
+		const next = useCallback(() => {
+			return setActiveSlide({
+				setter: () => {
+					// @NOTE
+					// - Loop back round to `0` if at end of list
+					return increment >= items.length ? 0 : increment;
+				},
+				callback: optionsWithDefaults.onNextSlide
+			});
+		}, [items, increment, optionsWithDefaults]);
+
+		const previous = useCallback(() => {
+			return setActiveSlide({
+				setter: () => {
+					// @NOTE
+					// - Loop back round to end of list if at start of list
+					return decrement >= 0 ? decrement : items.length - 1;
+				},
+				callback: optionsWithDefaults.onPrevSlide
+			})
+		}, [items, decrement, optionsWithDefaults]);
 
 		const hydratedItems = items.map((data, index, resource) => {
 			const isLast = resource.length === index + 1;
 			const isFirst = index === 0;
-			const decrement = index - 1;
-			const increment = index + 1;
 			const isSelected = activeSlide === index;
 
 			function select() {
@@ -95,32 +125,8 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 				});
 			};
 
-			function next() {
-				return setActiveSlide({
-					setter: () => {
-						// @NOTE
-						// - Loop back round to `0` if at end of list
-						return increment >= resource.length ? 0 : increment;
-					},
-					callback: optionsWithDefaults.onNextSlide
-				});
-			}
-
-			function previous() {
-				return setActiveSlide({
-					setter: () => {
-						// @NOTE
-						// - Loop back round to end of list if at start of list
-						return decrement >= 0 ? decrement : resource.length - 1;
-					},
-					callback: optionsWithDefaults.onPrevSlide
-				})
-			}
-
 			const actions = {
-				next,
 				select,
-				previous,
 			}
 
 			const metadata = {
@@ -140,9 +146,21 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 		const selectedItem = hydratedItems[activeSlide];
 
 		const value = {
+			next,
+			previous,
 			selectedItem,
 			hydratedItems,
 		}
+
+		useEffect(() => {
+			if (!optionsWithDefaults.autoRotate) {
+				return;
+			}
+
+			const timer = setTimeout(next, optionsWithDefaults.rotateDelay)
+
+			return () => clearInterval(timer);
+		}, [next, optionsWithDefaults]);
 
 		return <Context.Provider value={value}>{children}</Context.Provider>
 	}
@@ -161,8 +179,8 @@ function createHook<T extends unknown[]>(Context: Context<undefined | ComputedDa
 function createValuesComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
 	const useCarousel = createHook(Context);
 	return function CarouselValuesComponent({ children }: ValuesComponentProps<T>) {
-		const { hydratedItems, selectedItem } = useCarousel();
-		return <>{children({ hydratedItems, selectedItem })}</>
+		const values = useCarousel();
+		return <>{children(values)}</>
 	};
 }
 

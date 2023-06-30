@@ -131,8 +131,8 @@ function createHook<T extends unknown[]>(Context: Context<undefined | ComputedDa
 function createValuesComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
   const useSingleSelectList = createHook(Context);
   return function SingleSelectListValuesComponent({ children }: ValuesComponentProps<T>) {
-    const { hydratedItems, selectedItem } = useSingleSelectList();
-    return <>{children({ hydratedItems, selectedItem })}</>
+    const values = useSingleSelectList();
+    return <>{children(values)}</>
   };
 }
 

@@ -135,8 +135,8 @@ function createHook<T extends unknown[]>(Context: Context<undefined | ComputedDa
 function createValuesComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
   const useMultiSelectList = createHook(Context);
   return function MultiSelectListValuesComponent({ children }: ValuesComponentProps<T>) {
-    const { hydratedItems, selectedItems } = useMultiSelectList();
-    return <>{children({ hydratedItems, selectedItems })}</>
+    const values = useMultiSelectList();
+    return <>{children(values)}</>
   };
 }
 
