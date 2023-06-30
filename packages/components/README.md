@@ -32,8 +32,10 @@ Simple components have no dependencies other than [React](https://react.dev/). C
 
 - [ ] Text validation - Something like email validation is a good example, would likely require 3rd party dependencies, most likely [Zod](https://zod.dev/)
 - [ ] Text masking - Something like date or financial formatting is a good example, would likely require 3rd party dependencies
+- [ ] Timer (promotions) - Is this a common enough workflow?
 - [ ] Range (slider) - The implementation for this is not obvious and it will be difficult to create nice ergonomics
 - [ ] Progress (stepper, loading, rating, etc...) - This would need to be really diverse in order to be useful
+- [ ] Calendar (date/time pickers) - The implementation for this is not obvious and it will be difficult to create nice ergonomics
 
 Exo UI is not the same as [Headless UI](https://headlessui.com/) or [Radix UI](https://www.radix-ui.com/) as it is not responsible for any markup and instead focuses solely on UI state.
 
