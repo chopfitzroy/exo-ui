@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import React, { Context, createContext, useContext, useReducer } from 'react';
 
-type ActiveSlideCallback<T extends unknown[]> = (item: T[number], index: number, array: T) => void;
+type ActiveSlideCallback<T extends unknown[]> = (item: T[number], index: number, resource: T) => void;
 
 interface Options<T extends unknown[]> {
 	initiallySelectedSlideIndex: number;
@@ -54,14 +54,14 @@ interface SetActiveSlideParams<T extends unknown[]> {
 	callback?: (ActiveSlideCallback<T>);
 }
 
-function createSetActiveSlideReducer<T extends unknown[]>(array: T) {
+function createSetActiveSlideReducer<T extends unknown[]>(resource: T) {
 	return function setActiveSlideReducer(state: number, { setter, callback }: SetActiveSlideParams<T>) {
 		const index = setter(state);
 
 		// @NOTE
 		// - Call all user defined callbacks
 		if (callback !== undefined) {
-			callback(array[index], index, array)
+			callback(resource[index], index, resource)
 		}
 
 		return index;
@@ -81,8 +81,8 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 
 		const [activeSlide, setActiveSlide] = useReducer(createSetActiveSlideReducer(items), optionsWithDefaults.initiallySelectedSlideIndex);
 
-		const hydratedItems = items.map((data, index, payload) => {
-			const isLast = payload.length === index + 1;
+		const hydratedItems = items.map((data, index, resource) => {
+			const isLast = resource.length === index + 1;
 			const isFirst = index === 0;
 			const decrement = index - 1;
 			const increment = index + 1;
@@ -100,7 +100,7 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 					setter: () => {
 						// @NOTE
 						// - Loop back round to `0` if at end of list
-						return increment >= payload.length ? 0 : increment;
+						return increment >= resource.length ? 0 : increment;
 					},
 					callback: optionsWithDefaults.onNextSlide
 				});
@@ -111,7 +111,7 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 					setter: () => {
 						// @NOTE
 						// - Loop back round to end of list if at start of list
-						return decrement >= 0 ? decrement : payload.length - 1;
+						return decrement >= 0 ? decrement : resource.length - 1;
 					},
 					callback: optionsWithDefaults.onPrevSlide
 				})

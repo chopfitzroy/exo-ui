@@ -137,8 +137,8 @@ function createProviderComponent(Context: Context<undefined | ComputedData>) {
 
 		const hydratedItems = [...Array(count).keys()]
 			.map((key) => key + 1)
-			.map((page, index, payload) => {
-				const isLast = payload.length === index + 1;
+			.map((page, index, resource) => {
+				const isLast = resource.length === index + 1;
 				const isFirst = index === 0;
 				const isSelected = page === activePage;
 

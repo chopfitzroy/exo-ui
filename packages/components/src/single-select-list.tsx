@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 
 import React, { Context, createContext, useContext, useReducer } from 'react';
 
-type ActiveItemCallback<T extends unknown[]> = (item: T[number], index: number, array: T) => void;
+type ActiveItemCallback<T extends unknown[]> = (item: T[number], index: number, resource: T) => void;
 
 interface Options <T extends unknown[]>{
   initiallySelectedItemIndex: number;
@@ -50,14 +50,14 @@ interface SetActiveItemParams<T extends unknown[]> {
 	callback?: (ActiveItemCallback<T>);
 }
 
-function createSetActiveItemReducer<T extends unknown[]>(array: T) {
+function createSetActiveItemReducer<T extends unknown[]>(resource: T) {
 	return function setActiveItemReducer(state: number, { setter, callback }: SetActiveItemParams<T>) {
 		const index = setter(state);
 
 		// @NOTE
 		// - Call all user defined callbacks
 		if (callback !== undefined) {
-			callback(array[index], index, array)
+			callback(resource[index], index, resource)
 		}
 
 		return index;
@@ -77,8 +77,8 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 
     const [activeItem, setActiveItem] = useReducer(createSetActiveItemReducer(items), optionsWithDefaults.initiallySelectedItemIndex);
 
-    const hydratedItems = items.map((data, index, payload) => {
-      const isLast = payload.length === index + 1;
+    const hydratedItems = items.map((data, index, resource) => {
+      const isLast = resource.length === index + 1;
       const isFirst = index === 0;
       const isSelected = activeItem === index;
 

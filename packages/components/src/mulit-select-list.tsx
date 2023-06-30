@@ -2,10 +2,10 @@ import type { ReactNode } from 'react';
 
 import React, { Context, createContext, useContext, useReducer } from 'react';
 
-type ActiveItemsCallback<T extends unknown[]> = (item: T[number][], index: number[], array: T) => void;
+type ActiveItemsCallback<T extends unknown[]> = (items: T[number][], indices: number[], resource: T) => void;
 
 interface Options <T extends unknown[]>{
-  initiallySelectedItemsIndex: number[];
+  initiallySelectedItemsIndices: number[];
   onSelect?: ActiveItemsCallback<T>
 }
 
@@ -50,14 +50,14 @@ interface SetActiveItemsParams<T extends unknown[]> {
   callback?: (ActiveItemsCallback<T>);
 }
 
-function createSetActiveItemsReducer<T extends unknown[]>(array: T) {
+function createSetActiveItemsReducer<T extends unknown[]>(resource: T) {
   return function setActiveItemsReducer(state: number[], { setter, callback }: SetActiveItemsParams<T>) {
     const index = setter(state);
 
     // @NOTE
     // - Call all user defined callbacks
     if (callback !== undefined) {
-      callback(index.map(index => array[index]), index, array)
+      callback(index.map(index => resource[index]), index, resource)
     }
 
     return index;
@@ -65,7 +65,7 @@ function createSetActiveItemsReducer<T extends unknown[]>(array: T) {
 }
 
 const defaultOptions = {
-  initiallySelectedItemsIndex: [],
+  initiallySelectedItemsIndices: [],
 }
 
 function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
@@ -75,10 +75,10 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
       ...options
     }
 
-    const [activeItems, setActiveItems] = useReducer(createSetActiveItemsReducer(items), optionsWithDefaults.initiallySelectedItemsIndex);
+    const [activeItems, setActiveItems] = useReducer(createSetActiveItemsReducer(items), optionsWithDefaults.initiallySelectedItemsIndices);
 
-    const hydratedItems = items.map((data, index, payload) => {
-      const isLast = payload.length === index + 1;
+    const hydratedItems = items.map((data, index, resource) => {
+      const isLast = resource.length === index + 1;
       const isFirst = index === 0;
       const isSelected = activeItems.includes(index);
 

@@ -19,6 +19,7 @@ export const Accordion = () => {
   return (
     <SingleSelectList.Provider items={items} options={{
       onSelect: (item, index, array) => console.log({ item, index, array}),
+      initiallySelectedItemIndex: 1
     }}>
       <SingleSelectList.Map>
         {({ data, actions, metadata }) => (
