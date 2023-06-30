@@ -1,5 +1,7 @@
 # Exo UI 💎
 
+> Headless UI components _without_ semantic restrictions.
+
 Exo UI is a _workflow_ component library. It takes a _zero markup_ philosophy meaning that you are entirely responsible for the components look and feel.
 
 It also means that Exo UI can be run with [React](https://react.dev/), [React Native](https://reactnative.dev/), and [Preact](https://preactjs.com/) making it highly versitile.
