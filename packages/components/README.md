@@ -2,8 +2,6 @@
 
 Exo UI components are **0 Markup** workflow components that will help you create more composable user interfaces.
 
-Stop thinking about state and focus on data! 🎉
-
 Goals of this library:
 - 0 Markup (this means it can be using with [React Native](https://reactnative.dev/))
 - Composable, you should be able to access data without the need to prop drill
@@ -18,7 +16,7 @@ Simple components have no dependencies other than [React](https://react.dev/). C
 - [x] SingleSelectList (Accordions, etc...)
 - [x] MultiSelectList (Filters, etc...)
 - [x] Pagination (Pagination, etc...)
-- [ ] Carousel - Would include functions like next/previous as well as an optional rotation time
+- [x] Carousel - Would include functions like next/previous as well as an optional rotation time
 - [ ] Toggle (Modals, Dropdowns, etc...)
 - [ ] Queue (Alerts, etc...)
 - [ ] Guard (`true`/`false` rendering)
