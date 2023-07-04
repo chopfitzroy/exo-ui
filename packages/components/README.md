@@ -17,9 +17,8 @@ Simple components have no dependencies other than [React](https://react.dev/). C
 - [x] MultiSelectList (Filters, etc...)
 - [x] Pagination (Pagination, etc...)
 - [x] Carousel - Would include functions like next/previous as well as an optional rotation time
-- [ ] Toggle (Modals, Dropdowns, etc...)
+- [x] Toggle (Modals, Dropdowns, etc...)
 - [ ] Queue (Alerts, etc...)
-- [ ] Guard (`true`/`false` rendering)
 
 **Complex:**
 
@@ -32,7 +31,7 @@ Simple components have no dependencies other than [React](https://react.dev/). C
 - [ ] Text masking - Something like date or financial formatting is a good example, would likely require 3rd party dependencies
 - [ ] Timer (promotions) - Is this a common enough workflow?
 - [ ] Range (slider) - The implementation for this is not obvious and it will be difficult to create nice ergonomics
-- [ ] Progress (stepper, loading, rating, etc...) - This would need to be really diverse in order to be useful
+- [ ] Progress (stepper, loading, breadcrumbs, rating, etc...) - This would need to be really diverse in order to be useful
 - [ ] Calendar (date/time pickers) - The implementation for this is not obvious and it will be difficult to create nice ergonomics
 
 Exo UI is not the same as [Headless UI](https://headlessui.com/) or [Radix UI](https://www.radix-ui.com/) as it is not responsible for any markup and instead focuses solely on UI state.
