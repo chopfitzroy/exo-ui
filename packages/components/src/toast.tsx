@@ -1,30 +1,26 @@
-// @TODO
-// - Create a _tick_ which will check the expiry of each item
-// - Update the items progress based on how long it has remaining
-// - Remove an item if it has expired
-
-import type { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 
 import React, { Context, createContext, useState, useContext } from 'react';
 
 type ActivePageCallback<T extends unknown[]> = (item: T[number]) => void;
 
 interface Options<T extends unknown[]> {
-  autoAcknowledge: boolean;
-  acknowledgeDelay: number;
-  clearAcknowledged: boolean;
-  onAcknowledge?: ActivePageCallback<T>;
+	autoAcknowledge: boolean;
+	autoAcknowledgeDelay: number;
+	autoAcknowledgeUpdateInterval: number;
+	onAcknowledge?: ActivePageCallback<T>;
 }
 
 interface Actions {
-  acknowledge: () => void;
+	acknowledge: () => void;
 }
 
 // @NOTE
 // - Additional state is added to items during `add`
 interface TransientData {
+	added: Date;
+	progress: number;
 	isAcknowledged: boolean;
-  autoAcknowledgeRemaining: number;
 }
 
 interface Metadata extends TransientData {
@@ -45,7 +41,7 @@ interface AugmentedItem<T extends unknown[]> {
 }
 
 interface ComputedData<T extends unknown[]> {
-  add: (item: T[number]) => void;
+	add: (item: T[number]) => void;
 	hydratedItems: AugmentedItem<T>[];
 }
 
@@ -59,29 +55,31 @@ interface ValuesComponentProps<T extends unknown[]> {
 	children: (props: ComputedData<T>) => ReactNode;
 }
 
-const defaultOptions = {
-  autoAcknowledge: true,
-  acknowledgeDelay: 5_000,
-  clearAcknowledged: true,
-};
-
 const replace = <T extends unknown[]>(
-  payload: TransientItem<T>[],
-  ...args: [index: number, value: TransientItem<T>][]
+	payload: TransientItem<T>[],
+	...args: [index: number, value: TransientItem<T>][]
 ) => {
-  return args.reduce((result, [index, value]) => {
-    return [...result.slice(0, index), value, ...payload.slice(index + 1)];
-  }, payload);
+	return args.reduce((result, [index, value]) => {
+		return [...result.slice(0, index), value, ...payload.slice(index + 1)];
+	}, payload);
 };
 
 const update = <T extends unknown[]>(
-  payload: TransientItem<T>[],
-  index: number,
-  value: TransientItem<T>
+	payload: TransientItem<T>[],
+	index: number,
+	value: TransientItem<T>
 ) => {
-  return replace<T>(payload, [index, value]);
+	return replace<T>(payload, [index, value]);
 };
 
+const defaultOptions = {
+	autoAcknowledge: true,
+	autoAcknowledgeDelay: 5_000,
+	autoAcknowledgeUpdateInterval: 100,
+};
+
+// @TODO
+// - Transition from `unknown[]` to `unknown`
 function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
 	return function MultiSelectListProvider({ options, children }: ProviderComponentProps<T>) {
 		const optionsWithDefaults: Options<T> = {
@@ -92,34 +90,48 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 		const [toasts, setToasts] = useState<TransientItem<T>[]>([]);
 
 		const add = (item: T[number]) => {
-			if (optionsWithDefaults.onAcknowledge !== undefined) {
-				optionsWithDefaults.onAcknowledge(item);
-			}
-
 			const augmented = {
 				data: item,
 				metadata: {
-				isAcknowledged: false,
-				autoAcknowledgeRemaining: optionsWithDefaults.acknowledgeDelay,
+					added: new Date(),
+					progress: 0,
+					isAcknowledged: false,
 				}
 			}
 
 			setToasts(current => [...current, augmented]);
 		}
 
-		const hydratedItems = toasts.map(({ data, metadata }) => ({
-			data,
-			actions: {
-				// @TODO
-				// - Add actions
-				// - Use `update` to set `isAcknowledged` to `true`
-			},
-			metadata: {
-				...metadata,
-				// @TODO
-				// - Add additional `metadata`
-			}
-		}))
+		const hydratedItems = toasts
+			.map(({ data, metadata }, index, resource) => {
+				const isLast = resource.length === index + 1;
+				const isFirst = index === 0;
+
+				function acknowledge() {
+					return setToasts(current => {
+						return update(current, index, {
+							data,
+							metadata: {
+								...metadata,
+								isAcknowledged: true
+							}
+						})
+					})
+				};
+
+				return {
+					data,
+					actions: {
+						acknowledge
+					},
+					metadata: {
+						...metadata,
+						index,
+						isLast,
+						isFirst,
+					}
+				}
+			});
 
 		const value = {
 			add,
@@ -128,6 +140,25 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 
 		// @TODO
 		// - Add useEffect to manage timestamp
+		useEffect(() => {
+			if (!optionsWithDefaults.autoAcknowledge) {
+				return;
+			}
+
+			const timer = setTimeout(() => {
+				setToasts(current => {
+					// @TODO
+					// - Map over
+					// - Update `progress`
+					// - Update `isAcknowledged`
+					return current;
+				})
+			}, optionsWithDefaults.autoAcknowledgeUpdateInterval);
+
+			return () => clearTimeout(timer);
+			// @TODO
+			// - Memo deps...
+		}, []);
 
 		return <Context.Provider value={value}>{children}</Context.Provider>
 	}
