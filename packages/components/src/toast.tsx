@@ -1,6 +1,4 @@
 // @TODO
-// - Maintain internal array
-// - Tag new items with an `expiry`
 // - Create a _tick_ which will check the expiry of each item
 // - Update the items progress based on how long it has remaining
 // - Remove an item if it has expired
@@ -67,6 +65,23 @@ const defaultOptions = {
   clearAcknowledged: true,
 };
 
+const replace = <T extends unknown[]>(
+  payload: TransientItem<T>[],
+  ...args: [index: number, value: TransientItem<T>][]
+) => {
+  return args.reduce((result, [index, value]) => {
+    return [...result.slice(0, index), value, ...payload.slice(index + 1)];
+  }, payload);
+};
+
+const update = <T extends unknown[]>(
+  payload: TransientItem<T>[],
+  index: number,
+  value: TransientItem<T>
+) => {
+  return replace<T>(payload, [index, value]);
+};
+
 function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
 	return function MultiSelectListProvider({ options, children }: ProviderComponentProps<T>) {
 		const optionsWithDefaults: Options<T> = {
@@ -97,6 +112,7 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 			actions: {
 				// @TODO
 				// - Add actions
+				// - Use `update` to set `isAcknowledged` to `true`
 			},
 			metadata: {
 				...metadata,
