@@ -20,6 +20,9 @@ interface AugmentedItem<T extends unknown> {
   metadata: Metadata;
 }
 
+// @TODO
+// - `ComputedData` makes less sense since we started adding actions here
+// - Would like to come up with something a little more sensible
 interface ComputedData<T extends unknown> {
   toggle: () => void;
   enable: () => void;
