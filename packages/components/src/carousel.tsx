@@ -81,7 +81,7 @@ const defaultOptions = {
 // - We need to memo more often than we normally would
 function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
 	return function CarouselProvider({ items, options, children }: ProviderComponentProps<T>) {
-		const optionsWithDefaults: Options<T> = useMemo(() => ({
+		const optionsWithDefaults = useMemo<Options<T>>(() => ({
 			...defaultOptions,
 			...options
 		}), [options])

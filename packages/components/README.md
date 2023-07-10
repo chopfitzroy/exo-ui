@@ -18,7 +18,7 @@ Simple components have no dependencies other than [React](https://react.dev/). C
 - [x] Pagination (Pagination, etc...)
 - [x] Carousel - Would include functions like next/previous as well as an optional rotation time
 - [x] Toggle (Modals, Dropdowns, etc...)
-- [ ] Queue (Alerts, etc...)
+- [x] Toast (Alerts, etc...)
 
 **Complex:**
 

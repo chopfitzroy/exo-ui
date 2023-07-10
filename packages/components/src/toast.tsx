@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 
 import React, { Context, createContext, useState, useContext } from 'react';
 
@@ -41,12 +41,12 @@ interface AugmentedItem<T extends unknown[]> {
 }
 
 interface ComputedData<T extends unknown[]> {
-	add: (item: T[number]) => void;
+	add: (item: T[number][]) => void;
 	hydratedItems: AugmentedItem<T>[];
+	itemsAwaitingAcknowledgement: AugmentedItem<T>[];
 }
 
 interface ProviderComponentProps<T extends unknown[]> {
-	count: number;
 	children: ReactNode;
 	options?: Partial<Options<T>>;
 }
@@ -78,41 +78,46 @@ const defaultOptions = {
 	autoAcknowledgeUpdateInterval: 100,
 };
 
-// @TODO
-// - Transition from `unknown[]` to `unknown`
 function createProviderComponent<T extends unknown[]>(Context: Context<undefined | ComputedData<T>>) {
 	return function MultiSelectListProvider({ options, children }: ProviderComponentProps<T>) {
-		const optionsWithDefaults: Options<T> = {
+		const optionsWithDefaults = useMemo<Options<T>>(() => ({
 			...defaultOptions,
 			...options
-		}
+		}), [options])
 
 		const [toasts, setToasts] = useState<TransientItem<T>[]>([]);
 
-		const add = (item: T[number]) => {
-			const augmented = {
+		const add = (items: T[number][]) => {
+			const augmented = items.map(item => ({
 				data: item,
 				metadata: {
 					added: new Date(),
 					progress: 0,
 					isAcknowledged: false,
 				}
-			}
+			}));
 
-			setToasts(current => [...current, augmented]);
+			return setToasts(current => [...current, ...augmented]);
 		}
 
-		const hydratedItems = toasts
+		const hydratedItems = useMemo(() => toasts
 			.map(({ data, metadata }, index, resource) => {
 				const isLast = resource.length === index + 1;
 				const isFirst = index === 0;
 
 				function acknowledge() {
 					return setToasts(current => {
+						// @NOTE
+						// - Still debating whether a `useReducer` would make sense to handle this
+						if (optionsWithDefaults.onAcknowledge !== undefined) {
+							optionsWithDefaults.onAcknowledge(data);
+						}
+
 						return update(current, index, {
 							data,
 							metadata: {
 								...metadata,
+								progress: 100,
 								isAcknowledged: true
 							}
 						})
@@ -131,34 +136,52 @@ function createProviderComponent<T extends unknown[]>(Context: Context<undefined
 						isFirst,
 					}
 				}
-			});
+			}), [toasts, optionsWithDefaults]);
+
+		const itemsAwaitingAcknowledgement = useMemo(() => hydratedItems.filter(toast => !toast.metadata.isAcknowledged), [hydratedItems]);
 
 		const value = {
 			add,
 			hydratedItems,
+			itemsAwaitingAcknowledgement,
 		}
 
-		// @TODO
-		// - Add useEffect to manage timestamp
 		useEffect(() => {
 			if (!optionsWithDefaults.autoAcknowledge) {
 				return;
 			}
 
 			const timer = setTimeout(() => {
-				setToasts(current => {
-					// @TODO
-					// - Map over
-					// - Update `progress`
-					// - Update `isAcknowledged`
-					return current;
+				// @NOTE
+				// - Deliberately using `itemsAwaitingAcknowledgement` here
+				// - Would normally use a callback argument with `setToasts`
+				// - However given we want this effect to run whenever `toasts` updates
+				// - It made more sense to watch this value, also it means we can avoid and extra `filter`
+				const filtered = itemsAwaitingAcknowledgement.map(toast => {
+					const metadata = toast.metadata;
+
+					const now = new Date();
+					const then = metadata.added;
+					const diff = now.getTime() - then.getTime();
+
+					const percent = Math.round((diff / optionsWithDefaults.autoAcknowledgeDelay) * 100)
+					const progress = Math.min(100, percent);
+					const isAcknowledged = progress === 100;
+
+					return {
+						...toast,
+						metadata: {
+							...metadata,
+							progress,
+							isAcknowledged,
+						}
+					};
 				})
+				setToasts(filtered);
 			}, optionsWithDefaults.autoAcknowledgeUpdateInterval);
 
 			return () => clearTimeout(timer);
-			// @TODO
-			// - Memo deps...
-		}, []);
+		}, [optionsWithDefaults, itemsAwaitingAcknowledgement]);
 
 		return <Context.Provider value={value}>{children}</Context.Provider>
 	}
