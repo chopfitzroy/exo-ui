@@ -14,20 +14,28 @@ export default defineConfig({
       },
       sidebar: [
         {
-          label: 'Components',
+          label: 'Getting started',
           items: [
-            // Each item here is one entry in the navigation menu.
-            { label: 'Single select list', link: '/guides/example/' },
-            { label: 'Multi select list', link: '/guides/example/' },
-            { label: 'Pagination', link: '/guides/example/' },
-            { label: 'Carousel', link: '/guides/example/' },
-            { label: 'Toggle', link: '/guides/example/' },
-            { label: 'Toast', link: '/guides/example/' },
-          ],
+            { label: 'Introduction', link: '/overview/introduction/' },
+            { label: 'Philosophies', link: '/overview/philosophies/' },
+            { label: 'Explanations', link: '/overview/explanations/' },
+          ]
+        },
+        {
+          label: 'Components',
+          autogenerate: { directory: 'components' },
         },
         {
           label: 'Examples',
-          autogenerate: { directory: 'reference' },
+          autogenerate: { directory: 'examples' },
+        },
+        {
+          label: 'Tutorials',
+          items: [
+            { label: 'Extending provider fields', link: '/tutorials/extending-provider-fields/' },
+            { label: 'Adding custom actions to fields', link: '/tutorials/adding-custom-actions-to-fields/' },
+            { label: 'Using hooks in the same file as providers', link: '/tutorials/using-hooks-in-the-same-file-as-providers/' },
+          ]
         },
       ],
     }),
