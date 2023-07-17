@@ -18,7 +18,6 @@ export default defineConfig({
           items: [
             { label: 'Introduction', link: '/overview/introduction/' },
             { label: 'Philosophies', link: '/overview/philosophies/' },
-            { label: 'Explanations', link: '/overview/explanations/' },
           ]
         },
         {

@@ -3,11 +3,21 @@ title: Philosophies
 description: Design philosophies behind Exo UI.
 ---
 
-# Philosophies
-
 These are the guiding principles used when developing Exo UI.
 
 ### Single file components
 
+You may notice that each component i.e `SingleSelectList` is defined in a single file, including all type definitions.
+
+This is a deliberate choice inspired by [usehooks-ts](https://usehooks-ts.com/) to make for easy copy/paste for developers who would like to bring one or more components into their codebase without adding an additional dependency.
+
+This also helps with contribution as it is much easier for developers new to the codebase to orientate themselves quickly and not have to worry about making changes that will have impacts across multiple components.
+
 ### Limited use of memoization
+
+The use of memoization in React projects is a [relatively controversial](https://kentcdodds.com/blog/usememo-and-usecallback) topic and we deliberated on this for sometime before deciding our stance on this in relation to Exo UI.
+
+We only utilize memoization when it is strictly required, in otherwords when we intend to include a value or function in the dependency array of another value, effect, or function.
+
+If this doesn't make any sense to you don't worry! 99% of the time this shouldn't effect you and should only really be a consideration when contributing directly to the Exo UI source code.
 
