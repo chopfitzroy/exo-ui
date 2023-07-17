@@ -1,6 +1,63 @@
 ---
 title: Introduction
-description: A guide in my new Starlight docs site.
+description: A zero markup component library.
 ---
 
-Hello world
+# Overview
+
+Exo UI is a zero markup component library that works with both web and native and is built on top of React.
+
+Exo UI gives you complete semantic control over your components. No more fighting 3rd party stylesheets or abusing `:before` and `:after` because you can't insert a `div` where you would like to.
+
+Exo UI is does **not** come with any styling out of the box, we do however provide a number of example components that include basic styling to help get you started.
+
+What makes Exo UI unique? It was designed to solve a particular problem, Exo UI started out as a series of simple components that I would copy from one project to another and re-style from there.
+
+I noticed that while visually these components changed from site to site or app to app the underlying logic remained consistent.
+
+As I started to extract this logic I noticed a number of patterns start to emerge, for example what's the difference between accordions and tabs? Both essentially represent a list with one active item at any given time.
+
+The more I extracted the more I realised so much of what we do can be refined to a small number of primitives or _workflows_.
+
+As I started to share these components with colleagues I realized that while some concepts like `Toast` and `Toggle` were easily identifiable others like `SingleSelectList` remained less obvious.
+
+To get around this I started working on some examples to demonstrate that you could build common components like `Accordion` or `Tab` using primitives like `SingleSelectList`.
+
+### Inspiration
+
+It would be disingenuous to label these ideas as my own and Exo UI would not have been possible without inspiration form a number of existing tools:
+
+- [Remix](https://remix.run/)
+- [Tamagui](https://tamagui.dev/)
+- [Tailwind](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Headless UI](https://headlessui.com/)
+- [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/)
+
+### FAQ
+
+#### Does Exo UI rely on React?
+
+Yes.
+
+#### Does Exo UI rely on Tailwind?
+
+No. But they do pair very nicely.
+
+#### Why is Exo UI _zero markup_?
+
+By being zero markup we can target both web and native runtimes.
+
+#### When would I use this instead of Headless UI?
+
+If you are using Headless UI and it is working for you there is no need to change. If you wanted to use the same headless components in both your React web application and React Native app Exo UI might be a good choice.
+
+#### When would I use this instead of shadcn/ui?
+
+Exo UI is trying to solve a different problem than shancn/ui, shadcn/ui is a collection of components based on Tailwind and [Radix UI](https://www.radix-ui.com/) that can be copy/pasted into a project and are intented to be used as a starting point.
+
+Exo UI is a zero markup component library that allows you to import packaged logic for common user _workflows_, that you then have complete semantic control over.
+
+#### How does Exo UI handle accessibility?
+
+It doesn't. By shipping zero markup we are unable to help out with accessibility. We do however try to demonstrate best practices in all of our example components.
