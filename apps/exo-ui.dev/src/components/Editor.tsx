@@ -8,11 +8,13 @@ import {
 	SandpackPreview,
 } from "@codesandbox/sandpack-react";
 
-export const Editor = () => (
-	<SandpackProvider theme={cyberpunk} template="react">
-		<div>
-			<SandpackCodeEditor />
-			<SandpackPreview />
-		</div>
+export const Editor = (props: Parameters<typeof SandpackProvider>) => (
+	<SandpackProvider
+		{...props}
+		theme={cyberpunk}
+		template="react-ts"
+	>
+		<SandpackCodeEditor />
+		<SandpackPreview />
 	</SandpackProvider>
 )
