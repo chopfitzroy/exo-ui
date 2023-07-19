@@ -12,10 +12,13 @@
   "dependencies": {
     "@astrojs/markdoc": "^0.4.1",
     "@astrojs/react": "^2.2.1",
-    "@astrojs/starlight": "^0.4.2",
+    "@astrojs/starlight": "^0.5.3",
     "@codesandbox/sandpack-react": "^2.6.9",
     "@codesandbox/sandpack-themes": "^2.0.21",
     "astro": "2.7.0",
     "sharp": "^0.32.1"
+  },
+  "devDependencies": {
+    "sass": "^1.63.6"
   }
 }

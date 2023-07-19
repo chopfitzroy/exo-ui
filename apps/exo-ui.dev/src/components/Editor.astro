@@ -15,4 +15,6 @@ const files = Astro.props.files.reduce((result, item, index) => ({
 }), {});
 ---
 
-<Editor client:load files={files} />
+<div class="not-content">
+  <Editor client:load files={files} />
+</div>
