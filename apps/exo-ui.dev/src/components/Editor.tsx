@@ -1,5 +1,5 @@
 import React from 'react';
-import Styles from './Editor.module.scss';
+import Styles from './Editor.module.css';
 
 import { cyberpunk } from "@codesandbox/sandpack-themes";
 

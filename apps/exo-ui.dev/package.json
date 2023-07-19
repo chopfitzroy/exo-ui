@@ -17,8 +17,5 @@
     "@codesandbox/sandpack-themes": "^2.0.21",
     "astro": "2.7.0",
     "sharp": "^0.32.1"
-  },
-  "devDependencies": {
-    "sass": "^1.63.6"
   }
 }
