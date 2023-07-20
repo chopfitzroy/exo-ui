@@ -3,7 +3,9 @@ import fs from 'node:fs/promises';
 
 import { Editor } from "./Editor.tsx";
 
-const urls = Astro.props.files.map(item => new URL(`../examples/${item.file}`, import.meta.url));
+const prefix = import.meta.env.MODE === 'development' ? '..' : '../../src';
+
+const urls = Astro.props.files.map(item => new URL(`${prefix}/examples/${item.file}`, import.meta.url));
 const requests = urls.map(url => fs.readFile(url, 'utf-8'));
 const contents  = await Promise.all(requests);
 

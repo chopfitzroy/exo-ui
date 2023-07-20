@@ -15,7 +15,7 @@
     "@astrojs/starlight": "^0.5.3",
     "@codesandbox/sandpack-react": "^2.6.9",
     "@codesandbox/sandpack-themes": "^2.0.21",
-    "astro": "2.7.0",
+    "astro": "2.6.6",
     "sharp": "^0.32.1"
   }
 }
