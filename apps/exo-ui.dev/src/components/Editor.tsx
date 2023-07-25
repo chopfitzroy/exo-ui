@@ -15,8 +15,15 @@ export const Editor = (props: Parameters<typeof SandpackProvider>) => (
 			{...props}
 			theme={cyberpunk}
 			template="react-ts"
+			customSetup={{
+				dependencies: {
+					"@junket/components": "latest"
+				}
+			}}
 		>
-			<SandpackCodeEditor />
+			<div className={Styles.input}>
+				<SandpackCodeEditor />
+			</div>
 			<div className={Styles.preview}>
 				<SandpackPreview />
 			</div>
