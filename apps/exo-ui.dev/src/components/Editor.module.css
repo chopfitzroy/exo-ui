@@ -1,3 +1,8 @@
+.input {
+	overflow: auto;
+	max-height: 30rem;	
+}
+
 .editor {
 	margin: 1rem 0;
 	padding: 1rem;
