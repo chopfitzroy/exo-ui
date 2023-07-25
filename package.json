@@ -5,7 +5,10 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "deploy": "turbo run build lint format && changeset version && changeset publish"
+    "provision": "changeset add",
+    "version": "changeset version",
+    "commit": "changeset publish",
+    "deploy": "turbo run build lint format && npm run version && npm run commit"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
