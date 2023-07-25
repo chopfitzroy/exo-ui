@@ -1,6 +1,6 @@
 {
-  "name": "components",
-  "version": "1.0.0",
+  "name": "@junket/components",
+  "version": "1.0.6",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
@@ -9,14 +9,19 @@
     "lint": "eslint \"**/*.ts*\"",
     "build": "tsup src/index.ts --format cjs --dts"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
-    "react": "^17.0.2",
     "tsconfig": "*",
     "tsup": "^7.1.0",
     "typescript": "^4.5.2"
+  },
+  "peerDependencies": {
+    "react": "^16 || ^17 || ^18"
   }
 }
