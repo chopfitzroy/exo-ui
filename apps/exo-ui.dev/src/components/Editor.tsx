@@ -1,5 +1,4 @@
-import React from 'react';
-import Styles from './Editor.module.css';
+import './Editor.css';
 
 import { cyberpunk } from "@codesandbox/sandpack-themes";
 
@@ -10,21 +9,22 @@ import {
 } from "@codesandbox/sandpack-react";
 
 export const Editor = (props: Parameters<typeof SandpackProvider>) => (
-	<div className={Styles.editor}>
+	<div className="playground">
 		<SandpackProvider
 			{...props}
 			theme={cyberpunk}
 			template="react-ts"
+			options={{ bundlerURL: "https://sandpack-bundler.pages.dev" }}
 			customSetup={{
 				dependencies: {
 					"@vistas/exo-ui": "latest"
 				}
 			}}
 		>
-			<div className={Styles.input}>
+			<div className="playground-editor">
 				<SandpackCodeEditor />
 			</div>
-			<div className={Styles.preview}>
+			<div className="playground-preview">
 				<SandpackPreview />
 			</div>
 		</SandpackProvider>

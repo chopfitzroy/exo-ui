@@ -33,7 +33,7 @@ const Accordions = () => {
   return (
     <>
       {customItems.map(({ data, custom, metadata }) => (
-        <div>
+        <div key={metadata.index}>
           <button onClick={custom.select}>{data.name}</button>
           {metadata.isSelected && <p>Is rated: {data.rating}</p>}
         </div>

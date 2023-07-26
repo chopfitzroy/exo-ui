@@ -11,9 +11,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/markdoc": "^0.4.1",
+    "@astrojs/markdoc": "^0.4.4",
     "@astrojs/react": "^2.2.1",
-    "@astrojs/starlight": "^0.5.3",
+    "@astrojs/starlight": "^0.5.6",
     "@codesandbox/sandpack-react": "^2.6.9",
     "@codesandbox/sandpack-themes": "^2.0.21",
     "astro": "2.6.6",

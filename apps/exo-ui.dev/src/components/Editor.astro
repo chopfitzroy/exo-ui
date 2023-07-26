@@ -17,6 +17,9 @@ const files = Astro.props.files.reduce((result, item, index) => ({
 }), {});
 ---
 
+<!-- @TODO -->
+<!-- Would like to use `client:load` directive here, but it doesn't work for production builds -->
+<!-- This is occuring when the module CSS borks and it halts the pre-load script -->
 <div class="not-content">
   <Editor client:load files={files} />
 </div>

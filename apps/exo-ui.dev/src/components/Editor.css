@@ -1,9 +1,4 @@
-.input {
-	overflow: auto;
-	max-height: 30rem;	
-}
-
-.editor {
+.playground {
 	margin: 1rem 0;
 	padding: 1rem;
 	padding-top: 0.5rem;
@@ -11,7 +6,12 @@
 	background-color: #051c30;
 }
 
-.preview {
+.playground-editor {
+	overflow: auto;
+	max-height: 30rem;	
+}
+
+.playground-preview {
 	overflow: hidden;
 	border-radius: 0.25rem;
 }
