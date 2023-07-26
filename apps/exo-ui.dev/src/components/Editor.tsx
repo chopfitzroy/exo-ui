@@ -17,7 +17,7 @@ export const Editor = (props: Parameters<typeof SandpackProvider>) => (
 			template="react-ts"
 			customSetup={{
 				dependencies: {
-					"@junket/components": "latest"
+					"@vistas/exo-ui": "latest"
 				}
 			}}
 		>

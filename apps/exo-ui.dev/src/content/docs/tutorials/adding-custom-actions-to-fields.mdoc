@@ -1,6 +1,12 @@
 ---
-title: Add custom actions to fields
-description: A guide in my new Starlight docs site.
+title: Add custom actions
+description: How to extend existing Exo UI functionality 
 ---
 
-Hello world
+Sometimes the functions provided by Exo UI simply aren't enough when dealing with complex business logic.
+
+When you want to extend the functions provided by Exo UI we recommend mapping over the data returned from which ever component you are using and adding a new `custom` key to each item.
+
+**Note:** While any string will work we recommend `custom` because we considered that key _reserved_ and will never ship any logic that would intefer with that.
+
+{% editor files=[{ name: "/App.tsx", file: "add-custom-actions.tsx" }] /%}

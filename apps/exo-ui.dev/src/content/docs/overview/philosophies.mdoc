@@ -5,6 +5,26 @@ description: Design philosophies behind Exo UI.
 
 These are the guiding principles used when developing Exo UI.
 
+### Remove runtime restrictions
+
+We wanted Exo UI to work any where React worked, namely in the browser and on native devices.
+
+To do this we had to make sure we never referenced any markup directly, this ended up being an advantage as it forced us to create a library free of semantic restrictions.
+
+### Remove semantic restrictions
+
+Ever found the perfect third party library that does everything you want only to find out it's a nightmare to move a button or style an input? Us to! Exo UI was designed from the ground up to only ship functionality, no markup and no stylesheets.
+
+The draw back of an approach like this is it means Exo UI is limited in terms of it's ability to help with things like accessibility and animations, fortunately lots of great tools exist to help with these.
+
+### Remove data restrictions
+
+A lot of third party libraries require you to format your data _their_ way, this can be frustrating, if you already have a `slides` array containing objects with `title` and `image` why should you have to change those objects to have `caption` and `background`?
+
+Exo UI tries to solve this problem by _wrapping_ around your data and never modifying it directly, this does add some verbosity but also allows Exo UI to be very flexible in terms of the _shape_ of data it consumes.
+
+Obviously we do have to make some concesions like expecting an array to be passed to components that iterate over lists, etc...
+
 ### Single file components
 
 You may notice that each component i.e `SingleSelectList` is defined in a single file, including all type definitions.
@@ -20,5 +40,3 @@ The use of memoization in React projects is a [relatively controversial](https:/
 We only utilize memoization when it is strictly required, in otherwords when we intend to include a value or function in the dependency array of another value, effect, or function.
 
 If this doesn't make any sense to you don't worry! 99% of the time this shouldn't effect you and should only really be a consideration when contributing directly to the Exo UI source code.
-
-{% editor files=[{ name: "/App.tsx", file: "hello-sandpack.tsx" }] /%}
