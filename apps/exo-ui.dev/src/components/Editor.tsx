@@ -1,4 +1,4 @@
-import './Editor.css';
+import './Editor.scss';
 
 import { cyberpunk } from "@codesandbox/sandpack-themes";
 
