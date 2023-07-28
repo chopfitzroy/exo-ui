@@ -1,0 +1,24 @@
+diff --git a/node_modules/astro/dist/core/build/static-build.js b/node_modules/astro/dist/core/build/static-build.js
+index 39dfa10..8b0fc9c 100644
+--- a/node_modules/astro/dist/core/build/static-build.js
++++ b/node_modules/astro/dist/core/build/static-build.js
+@@ -329,7 +329,8 @@ async function ssrMoveAssets(opts) {
+ function makeAstroPageEntryPointFileName(prefix, facadeModuleId, routes) {
+   const pageModuleId = facadeModuleId.replace(prefix, "").replace(ASTRO_PAGE_EXTENSION_POST_PATTERN, ".");
+   let route = routes.find((routeData) => {
+-    return routeData.route === pageModuleId;
++    // https://github.com/withastro/astro/issues/7561
++    return routeData.route === pageModuleId || routeData.component === pageModuleId;
+   });
+   let name = pageModuleId;
+   if (route) {
+@@ -338,7 +339,8 @@ function makeAstroPageEntryPointFileName(prefix, facadeModuleId, routes) {
+   if (name.endsWith("/"))
+     name += "index";
+   const fileName = `${name.replaceAll("[", "_").replaceAll("]", "_").replaceAll("...", "---")}.mjs`;
+-  if (name.startsWith("..")) {
++  // https://github.com/withastro/astro/issues/7561
++  if (pageModuleId.startsWith('..')) {
+     return `pages${fileName}`;
+   }
+   return fileName;

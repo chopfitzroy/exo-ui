@@ -1,5 +1,11 @@
 {
+  "name": "exo-ui",
   "private": true,
+  "packageManager": "npm@9.5.1",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
@@ -8,19 +14,15 @@
     "provision": "changeset add",
     "version": "changeset version",
     "commit": "changeset publish",
-    "deploy": "turbo run build lint format && npm run version && npm run commit"
+    "deploy": "turbo run build lint format && npm run version && npm run commit",
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
+    "patch-package": "^8.0.0",
     "prettier": "^2.5.1",
     "turbo": "latest"
-  },
-  "name": "exo-ui",
-  "packageManager": "npm@9.5.1",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  }
 }
