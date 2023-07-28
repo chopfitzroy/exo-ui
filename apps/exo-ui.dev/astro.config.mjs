@@ -39,6 +39,9 @@ export default defineConfig({
           ]
         },
       ],
+      customCss: [
+        './src/components/Editor.css'
+      ]
     }),
   ],
 
