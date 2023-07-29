@@ -24,6 +24,9 @@ To develop all apps and packages, run the following command:
 npm run dev
 ```
 
+### Deploy
+
+Project is automatically deployed with [Vercel](https://vercel.com/).
 
 ### Misc 🔮
 
