@@ -1,6 +1,12 @@
 ---
 title: Using hooks in the same file as providers
-description: A guide in my new Starlight docs site.
+description: For when you want to use a hook in the same file as the provider is rendered.
 ---
 
-Hello world
+Sometimes you will want to use a hook instead of the `Values` component. This is especially true if you want to massage the data returned from Exo UI before rendering.
+
+Normally this isn't an issue when you have rendered the `Provider` further up the component tree, sometimes however we want to use a hook in the same file we create the Exo UI component.
+
+This is easy enough to do and just requires us to create two components in the file we are working in, below is a working example.
+
+{% editor files=[{ name: "/App.tsx", file: "use-hook-same-file-as-provider.tsx" }] /%}
