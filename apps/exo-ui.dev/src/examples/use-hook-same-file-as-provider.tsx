@@ -1,35 +1,43 @@
-import { createSingleSelectListComponent } from "@vistas/exo-ui";
+import { createMultiSelectListComponent } from "@vistas/exo-ui";
 
 // @TODO
 // - Move this to seperate file and import
 const response = [
   {
-    name: "Tom Hanks",
-    rating: 100,
-    details: "Truly brilliant",
+    name: 'Tomato',
+    cost: 0.5,
   },
   {
-    name: "Tom Holland",
-    rating: 101,
-    details: "A nation treasure",
+    name: 'Lettuce',
+    cost: 0.25,
+  },
+  {
+    name: 'Cheese',
+    cost: 1,
+  },
+  {
+    name: 'Onions',
+    cost: 0
   }
 ];
 
-const { SingleSelectList, useSingleSelectList } = createSingleSelectListComponent<typeof response>();
+const { MultiSelectList, useMultiSelectList } = createMultiSelectListComponent<typeof response>();
 
-const Accordions = () => {
-  const { hydratedItems, selectedItem } = useSingleSelectList();
+const CondimentSelect = () => {
+  const { hydratedItems, selectedItems } = useMultiSelectList();
 
-  const isRatingOver100 = Number(selectedItem?.data.rating) > 100;
-  const titleStyle = isRatingOver100 ? {color: 'red'} : {color: 'blue'};
+  const totalCondiments = selectedItems.length;
+  const isMaxCondiments = totalCondiments === 3;
+
+  const totalAdditionalCost = selectedItems.reduce((sum, item) => sum + item.data.cost, 0);
 
   return (
     <>
-      <p style={titleStyle}>Rating: {selectedItem?.data.rating}</p>
+      <p>Cost: {totalAdditionalCost}</p>
+      {isMaxCondiments && <p>You have reached the maximum number of condiments, please remove existing condiment if you would like to select something else.</p>}
       {hydratedItems.map(({ data, actions, metadata }) => (
-        <div key={metadata.index}>
-          <button onClick={actions.select}>{data.name}</button>
-          {metadata.isSelected && <p>{data.details}</p>}
+        <div key={metadata.index} style={metadata.isSelected ? { border: '2px solid green'} : { border: '2px solid grey' }}>
+          <button disabled={isMaxCondiments && !metadata.isSelected } onClick={actions.select}>{data.name}</button>
         </div>
       ))}
     </>
@@ -39,12 +47,10 @@ const Accordions = () => {
 export default function App() {
   return (
     <div className="App">
-      <SingleSelectList.Provider items={response} options={{
-        initiallySelectedItemIndex: 0
-      }}>
+      <MultiSelectList.Provider items={response}>
         <p>Actor ratings:</p>
-        <Accordions />
-      </SingleSelectList.Provider>
+        <CondimentSelect />
+      </MultiSelectList.Provider>
     </div>
   );
 }
