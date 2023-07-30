@@ -1,6 +1,10 @@
 ---
 title: Extending provider fields
-description: A guide in my new Starlight docs site.
+description: For when you want to add your own fields to a Exo UI provider.
 ---
 
-Hello world
+[Providers](https://react.dev/reference/react/createContext#provider) can be very useful tools when used correctly, sometimes you may want to augment an Exo UI `Provider` with some additional values or state.
+
+Instead of modifying the Exo UI `Provider` directly we instead recommend wrapping it around your own context. This can be a bit hard to visualize we have provided an example below.
+
+{% editor files=[{ name: "/App.tsx", file: "extending-provider-fields.tsx" }] /%}
