@@ -9,17 +9,11 @@ const urls = Astro.props.files.map(item => new URL(`${prefix}/examples/${item.fi
 const requests = urls.map(url => fs.readFile(url, 'utf-8'));
 const contents  = await Promise.all(requests);
 
-// @TODO
-// - This can be much cleaner...
-const files = Astro.props.files.reduce((result, item, index) => ({
-  ...result,
-  [item.name]: contents[index],
-}), {});
----
+const formatted = Astro.props.files.map((item, index) => ([item.name, contents[index]]));
+const files = Object.fromEntries(new Map(formatted));
 
-<!-- @TODO -->
-<!-- Would like to use `client:load` directive here, but it doesn't work for production builds -->
-<!-- This is occuring when the module CSS borks and it halts the pre-load script -->
+const [{ name: active }] = Astro.props.files;
+---
 <div class="not-content">
-  <Editor client:load files={files} />
+  <Editor client:load files={files} active={active} />
 </div>

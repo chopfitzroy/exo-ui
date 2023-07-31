@@ -46,7 +46,7 @@ function SettingsModalProvider({ children }: SettingsModalProviderProps) {
   )
 }
 
-function useSettingsModal() {
+export function useSettingsModal() {
   const toggle = useToggle();
   const context = useContext(SettingsModalContext)
 
@@ -60,19 +60,7 @@ function useSettingsModal() {
   }
 }
 
-const SettingsModal = {
+export const SettingsModal = {
   Provider: SettingsModalProvider,
 }
 
-function Modal() {
-  const {} = useSettingsModal();
-  return <p>I am the modal</p>;
-}
-
-export default function App() {
-  return (
-    <SettingsModal.Provider>
-      <Modal />
-    </SettingsModal.Provider>
-  )
-}
