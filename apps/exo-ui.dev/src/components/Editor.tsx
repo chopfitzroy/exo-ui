@@ -18,9 +18,14 @@ interface EditorProps {
 // - Add open in Github button using `dir`
 // - Add nicer open in Codesandbox button
 // - Add console window
-export const Editor = ({ files, active }: EditorProps) => {
+export const Editor = ({ dir, files, active }: EditorProps) => {
+	const link = `https://github.com/chopfitzroy/exo-ui/tree/main/apps/exo-ui.dev/src/examples/${dir}`;
+
 	return (
 		<div className="playground">
+			<div className="playground-controls">
+				<a href={link} target="_blank">View on Github</a>
+			</div>
 			<SandpackProvider
 				files={files}
 				theme={cyberpunk}
