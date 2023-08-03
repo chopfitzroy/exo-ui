@@ -9,10 +9,15 @@ import {
 } from "@codesandbox/sandpack-react";
 
 interface EditorProps {
+	dir: string;
 	files: SandpackFiles;
 	active: string;
 }
 
+// @TODO
+// - Add open in Github button using `dir`
+// - Add nicer open in Codesandbox button
+// - Add console window
 export const Editor = ({ files, active }: EditorProps) => {
 	return (
 		<div className="playground">

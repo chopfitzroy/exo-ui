@@ -5,6 +5,7 @@ export default defineMarkdocConfig({
     editor: {
       render: component('./src/components/Editor.astro'),
       attributes: {
+        dir: { type: String },
         files: { type: Array },
       },
     },

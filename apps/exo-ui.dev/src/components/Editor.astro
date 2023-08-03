@@ -5,15 +5,16 @@ import { Editor } from "./Editor.tsx";
 
 const prefix = import.meta.env.MODE === 'development' ? '..' : '../../src';
 
-const urls = Astro.props.files.map(item => new URL(`${prefix}/examples/${item.file}`, import.meta.url));
-const requests = urls.map(url => fs.readFile(url, 'utf-8'));
-const contents  = await Promise.all(requests);
+const [first] = Astro.props.files;
 
-const formatted = Astro.props.files.map((item, index) => ([item.name, contents[index]]));
-const files = Object.fromEntries(new Map(formatted));
+const dir = Astro.props.dir;
+const urls = Astro.props.files.map(item => new URL(`${prefix}/examples/${dir}/${item.file}`, import.meta.url));
+const contents  = await Promise.all(urls.map(url => fs.readFile(url, 'utf-8')));
 
-const [{ name: active }] = Astro.props.files;
+const map = Astro.props.files.map((item, index) => ([`/${item.file}`, contents[index]]));
+const files = Object.fromEntries(new Map(map));
+const active = `/${first.file}`;
 ---
 <div class="not-content">
-  <Editor client:load files={files} active={active} />
+  <Editor client:load dir={dir} files={files} active={active} />
 </div>
