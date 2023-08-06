@@ -6,8 +6,10 @@
 	background-color: #051c30;
 }
 
-.playground-controls a {
+.playground-icon {
 	color: white;
+	width: 1rem;
+	height: 1rem;
 }
 
 .playground-editor {

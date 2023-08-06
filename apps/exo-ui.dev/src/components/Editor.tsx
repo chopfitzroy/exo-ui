@@ -1,6 +1,7 @@
 import type { SandpackFiles } from "@codesandbox/sandpack-react";
 
 import { cyberpunk } from "@codesandbox/sandpack-themes";
+import { BeakerIcon } from '@heroicons/react/24/solid';
 
 import {
 	SandpackPreview,
@@ -24,7 +25,9 @@ export const Editor = ({ dir, files, active }: EditorProps) => {
 	return (
 		<div className="playground">
 			<div className="playground-controls">
-				<a href={link} target="_blank">View on Github</a>
+				<a href={link} target="_blank">
+					<BeakerIcon className="playground-icon" />
+				</a>
 			</div>
 			<SandpackProvider
 				files={files}
