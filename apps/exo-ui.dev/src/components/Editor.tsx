@@ -1,9 +1,12 @@
+import type { ComponentRef } from 'react';
 import type { SandpackFiles } from "@codesandbox/sandpack-react";
 
+import { useRef } from 'react';
 import { cyberpunk } from "@codesandbox/sandpack-themes";
-import { CodeBracketIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/solid';
+import { NoSymbolIcon, ArrowPathIcon, CodeBracketIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/solid';
 
 import {
+	useSandpack,
 	SandpackConsole,
 	SandpackPreview,
 	SandpackProvider,
@@ -14,14 +17,37 @@ import {
 interface EditorProps {
 	dir: string;
 	files: SandpackFiles;
-	active: string;
 }
+
+const RefreshButton = () => {
+	const { dispatch } = useSandpack();
+
+	const handleRefresh = () => {
+		dispatch({ type: "refresh" });
+	};
+
+	return (
+		<button type="button" onClick={handleRefresh}>
+			<ArrowPathIcon className="playground-icon" />
+		</button>
+	);
+};
 
 // @NOTE
 // - Heavily inspired by:
 // - https://www.joshwcomeau.com/react/next-level-playground/
-export const Editor = ({ dir, files, active }: EditorProps) => {
+export const Editor = ({ dir, files }: EditorProps) => {
+	// @NOTE
+	// - https://github.com/codesandbox/sandpack/issues/730
+	const consoleRef = useRef<ComponentRef<typeof SandpackConsole>>(null);
+
 	const link = `https://github.com/chopfitzroy/exo-ui/tree/main/apps/exo-ui.dev/src/examples/${dir}`;
+
+	const handleClear = () => {
+		if (consoleRef.current !== null) {
+			consoleRef.current.reset();
+		}
+	}
 
 	return (
 		<div className="playground">
@@ -29,10 +55,6 @@ export const Editor = ({ dir, files, active }: EditorProps) => {
 				files={files}
 				theme={cyberpunk}
 				template="react-ts"
-				options={{
-					activeFile: active,
-					bundlerURL: "https://sandpack-bundler.pages.dev"
-				}}
 				customSetup={{
 					dependencies: {
 						"@vistas/exo-ui": "latest"
@@ -50,12 +72,18 @@ export const Editor = ({ dir, files, active }: EditorProps) => {
 				<div className="playground-editor">
 					<SandpackCodeEditor />
 				</div>
+				<div className="playground-controls">
+					<button type="button" onClick={handleClear}>
+						<NoSymbolIcon className="playground-icon" />
+					</button>
+					<RefreshButton />
+				</div>
 				<div className="playground-preview">
 					<SandpackPreview
 						showRefreshButton={false}
 						showOpenInCodeSandbox={false}
 					/>
-					<SandpackConsole />
+					<SandpackConsole ref={consoleRef} />
 				</div>
 			</SandpackProvider>
 		</div>
