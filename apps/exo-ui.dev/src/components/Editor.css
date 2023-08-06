@@ -6,6 +6,20 @@
 	background-color: #051c30;
 }
 
+.playground-controls {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+}
+
+.playground-button {
+	border: 0;
+	cursor: pointer;
+	display: inline-block;
+	margin-left: 0.5rem;
+	background-color: transparent;
+}
+
 .playground-icon {
 	color: white;
 	width: 1rem;
