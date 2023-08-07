@@ -18,7 +18,6 @@ type Tabs = 'preview' | 'console';
 
 interface EditorProps {
 	dir: string;
-	title: string;
 	files: SandpackFiles;
 }
 
@@ -30,7 +29,7 @@ const RefreshButton = () => {
 	};
 
 	return (
-		<button type="button" onClick={handleRefresh}>
+		<button type="button" onClick={handleRefresh} className="playground-button">
 			<ArrowPathIcon className="playground-icon" />
 		</button>
 	);
@@ -39,7 +38,7 @@ const RefreshButton = () => {
 // @NOTE
 // - Heavily inspired by:
 // - https://www.joshwcomeau.com/react/next-level-playground/
-export const Editor = ({ dir, title, files }: EditorProps) => {
+export const Editor = ({ dir, files }: EditorProps) => {
 	// @NOTE
 	// - https://github.com/codesandbox/sandpack/issues/730
 	const consoleRef = useRef<ComponentRef<typeof SandpackConsole>>(null);
@@ -72,17 +71,6 @@ export const Editor = ({ dir, title, files }: EditorProps) => {
 					}
 				}}
 			>
-				<div className="playground-controls">
-					<p>{title}</p>
-					<div className="playground-external">
-						<a href={link} title="View on GitHub" target="_blank" className="playground-button">
-							<CodeBracketIcon className="playground-icon" />
-						</a>
-						<UnstyledOpenInCodeSandboxButton className="playground-button">
-							<ArrowTopRightOnSquareIcon className="playground-icon" />
-						</UnstyledOpenInCodeSandboxButton>
-					</div>
-				</div>
 				<div className="playground-editor">
 					<SandpackCodeEditor />
 				</div>
@@ -95,7 +83,7 @@ export const Editor = ({ dir, title, files }: EditorProps) => {
 						<RefreshButton />
 					)}
 					{isConsoleActive && (
-						<button type="button" onClick={handleClear}>
+						<button type="button" onClick={handleClear} className="playground-button">
 							<NoSymbolIcon className="playground-icon" />
 						</button>
 					)}
@@ -109,6 +97,16 @@ export const Editor = ({ dir, title, files }: EditorProps) => {
 					</div>
 					<div className={`playground-console ${isConsoleActive ? 'active' : ''}`}>
 						<SandpackConsole ref={consoleRef} />
+					</div>
+				</div>
+				<div className="playground-controls">
+					<div className="playground-external">
+						<a href={link} title="View on GitHub" target="_blank" className="playground-button">
+							<CodeBracketIcon className="playground-icon" />
+						</a>
+						<UnstyledOpenInCodeSandboxButton className="playground-button">
+							<ArrowTopRightOnSquareIcon className="playground-icon" />
+						</UnstyledOpenInCodeSandboxButton>
 					</div>
 				</div>
 			</SandpackProvider>

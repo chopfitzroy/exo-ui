@@ -17,10 +17,14 @@
 .playground-controls {
 	display: flex;
 	align-items: center;
+	border-bottom: 1px solid #042f40;
+	margin-bottom: 0.5rem;
+	padding-bottom: 0.5rem;
 	justify-content: space-between;
 }
 
 .playground-external {
+	width: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
@@ -43,6 +47,22 @@
 .playground-editor {
 	overflow: auto;
 	max-height: 30rem;	
+}
+
+.playground-tab {
+	color: #aaaaaa;
+	border: 0;
+	padding: 0.5rem;
+	transition: ease-in-out color 300ms;
+	background-color: transparent;
+}
+
+.playground-tab:hover {
+	color: white;
+}
+
+.playground-tab.active {
+	color: #fdf500;
 }
 
 .playground-outputs {
