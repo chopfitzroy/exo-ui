@@ -1,3 +1,11 @@
+/* OVERRIDES */
+
+.playground-console .sp-console-actions {
+	display: none;
+}
+
+/* CUSTOM */
+
 .playground {
 	margin: 1rem 0;
 	padding: 1rem;
@@ -7,6 +15,12 @@
 }
 
 .playground-controls {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.playground-external {
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
@@ -31,8 +45,18 @@
 	max-height: 30rem;	
 }
 
-.playground-preview {
+.playground-outputs {
 	overflow: hidden;
 	border-radius: 0.25rem;
+}
+
+.playground-preview,
+.playground-console {
+	display: none;
+}
+
+.playground-preview.active,
+.playground-console.active {
+	display: block;
 }
 
