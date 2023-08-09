@@ -1,5 +1,10 @@
 /* OVERRIDES */
 
+.playground-preview > div,
+.playground-console > div {
+	height: 100%;
+}
+
 .playground-console .sp-console-actions {
 	display: none;
 }
@@ -83,13 +88,7 @@
 	display: none;
 }
 
-.playground-preview > div,
-.playground-console > div {
-	height: 100%;
-}
-
 .playground-preview.active,
 .playground-console.active {
 	display: block;
 }
-
