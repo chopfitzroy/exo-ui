@@ -16,12 +16,17 @@ import {
 
 type Tabs = 'preview' | 'console';
 
+interface RefreshButtonProps {
+	className?: string;
+}
+
 interface EditorProps {
 	dir: string;
 	files: SandpackFiles;
 }
 
-const RefreshButton = () => {
+
+const RefreshButton = ({ className = '' }: RefreshButtonProps) => {
 	const { dispatch } = useSandpack();
 
 	const handleRefresh = () => {
@@ -29,23 +34,22 @@ const RefreshButton = () => {
 	};
 
 	return (
-		<button type="button" onClick={handleRefresh} className="playground-button">
+		<button type="button" onClick={handleRefresh} className={className}>
 			<ArrowPathIcon className="playground-icon" />
 		</button>
 	);
 };
 
+
 // @NOTE
 // - Heavily inspired by:
 // - https://www.joshwcomeau.com/react/next-level-playground/
-export const Editor = ({ dir, files }: EditorProps) => {
+const Layout = () => {
 	// @NOTE
 	// - https://github.com/codesandbox/sandpack/issues/730
 	const consoleRef = useRef<ComponentRef<typeof SandpackConsole>>(null);
 
 	const [activeTab, setActiveTab] = useState<Tabs>('preview');
-
-	const link = `https://github.com/chopfitzroy/exo-ui/tree/main/apps/exo-ui.dev/src/examples/${dir}`;
 
 	const isPreviewActive = activeTab === 'preview';
 	const isConsoleActive = activeTab === 'console';
@@ -60,6 +64,43 @@ export const Editor = ({ dir, files }: EditorProps) => {
 	}
 
 	return (
+		<>
+			<div className="playground-editor">
+				<SandpackCodeEditor />
+			</div>
+			<div className="playground-controls">
+				<div className="playground-tabs">
+					<button onClick={handlePreviewTab} className={`playground-tab ${isPreviewActive ? 'active' : ''}`}>Preview</button>
+					<button onClick={handleConsoleTab} className={`playground-tab ${isConsoleActive ? 'active' : ''}`}>Console</button>
+				</div>
+				<RefreshButton className={`playground-button ${isPreviewActive ? '' : 'hidden'}`} />
+				<button type="button" onClick={handleClear} className={`playground-button ${isConsoleActive ? '' : 'hidden'}`}>
+					<NoSymbolIcon className="playground-icon" />
+				</button>
+			</div>
+			<div className="playground-outputs">
+				<div className={`playground-preview ${isPreviewActive ? 'active' : ''}`}>
+					<SandpackPreview
+						showRefreshButton={false}
+						showOpenInCodeSandbox={false}
+					/>
+				</div>
+				<div className={`playground-console ${isConsoleActive ? 'active' : ''}`}>
+					<SandpackConsole ref={consoleRef} />
+				</div>
+			</div>
+		</>
+	)
+}
+
+// @NOTE
+// - Split into `Layout` and `Editor` to avoid re-render issue
+// - Essentially changing the active tab was resetting the editor contents
+export const Editor = ({ dir, files }: EditorProps) => {
+
+	const link = `https://github.com/chopfitzroy/exo-ui/tree/main/apps/exo-ui.dev/src/examples/${dir}`;
+
+	return (
 		<div className="playground">
 			<SandpackProvider
 				files={files}
@@ -71,43 +112,14 @@ export const Editor = ({ dir, files }: EditorProps) => {
 					}
 				}}
 			>
-				<div className="playground-editor">
-					<SandpackCodeEditor />
-				</div>
-				<div className="playground-controls">
-					<div className="playground-tabs">
-						<button onClick={handlePreviewTab} className={`playground-tab ${isPreviewActive ? 'active' : ''}`}>Preview</button>
-						<button onClick={handleConsoleTab} className={`playground-tab ${isConsoleActive ? 'active' : ''}`}>Console</button>
-					</div>
-					{isPreviewActive && (
-						<RefreshButton />
-					)}
-					{isConsoleActive && (
-						<button type="button" onClick={handleClear} className="playground-button">
-							<NoSymbolIcon className="playground-icon" />
-						</button>
-					)}
-				</div>
-				<div className="playground-outputs">
-					<div className={`playground-preview ${isPreviewActive ? 'active' : ''}`}>
-						<SandpackPreview
-							showRefreshButton={false}
-							showOpenInCodeSandbox={false}
-						/>
-					</div>
-					<div className={`playground-console ${isConsoleActive ? 'active' : ''}`}>
-						<SandpackConsole ref={consoleRef} />
-					</div>
-				</div>
-				<div className="playground-controls">
-					<div className="playground-external">
-						<a href={link} title="View on GitHub" target="_blank" className="playground-button">
-							<CodeBracketIcon className="playground-icon" />
-						</a>
-						<UnstyledOpenInCodeSandboxButton className="playground-button">
-							<ArrowTopRightOnSquareIcon className="playground-icon" />
-						</UnstyledOpenInCodeSandboxButton>
-					</div>
+				<Layout />
+				<div className="playground-external">
+					<a href={link} title="View on GitHub" target="_blank" className="playground-button">
+						<CodeBracketIcon className="playground-icon" />
+					</a>
+					<UnstyledOpenInCodeSandboxButton className="playground-button">
+						<ArrowTopRightOnSquareIcon className="playground-icon" />
+					</UnstyledOpenInCodeSandboxButton>
 				</div>
 			</SandpackProvider>
 		</div>

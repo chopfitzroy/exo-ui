@@ -8,7 +8,7 @@
 
 .playground {
 	margin: 1rem 0;
-	padding: 1rem;
+	padding: 0.5rem 1rem;
 	padding-top: 0.5rem;
 	border-radius: 0.25rem;
 	background-color: #051c30;
@@ -18,14 +18,14 @@
 	display: flex;
 	align-items: center;
 	border-bottom: 1px solid #042f40;
-	margin-bottom: 0.5rem;
-	padding-bottom: 0.5rem;
+	margin-bottom: 1rem;
+	padding-bottom: 0.25rem;
 	justify-content: space-between;
 }
 
 .playground-external {
-	width: 100%;
 	display: flex;
+	margin-top: 0.5rem;
 	align-items: center;
 	justify-content: flex-end;
 }
@@ -38,6 +38,10 @@
 	background-color: transparent;
 }
 
+.playground-button.hidden {
+	display: none;
+}
+
 .playground-icon {
 	color: white;
 	width: 1rem;
@@ -45,8 +49,11 @@
 }
 
 .playground-editor {
+	height: 20rem;	
 	overflow: auto;
-	max-height: 30rem;	
+	margin-bottom: 0.5rem;
+	padding-bottom: 0.5rem;
+	border-bottom: 1px solid #042f40;
 }
 
 .playground-tab {
@@ -72,7 +79,13 @@
 
 .playground-preview,
 .playground-console {
+	height: 15rem;
 	display: none;
+}
+
+.playground-preview > div,
+.playground-console > div {
+	height: 100%;
 }
 
 .playground-preview.active,
