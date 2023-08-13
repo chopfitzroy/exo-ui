@@ -29,17 +29,29 @@ const CondimentSelect = () => {
   const totalCondiments = selectedItems.length;
   const isMaxCondiments = totalCondiments === 3;
 
-  const totalAdditionalCost = selectedItems.reduce((sum, item) => sum + item.data.cost, 0);
+  const totalAdditionalCost = selectedItems
+    .reduce((sum, item) => sum + item.data.cost, 0)
+   .toLocaleString("en",{ useGrouping: false, minimumFractionDigits: 2 });
 
   return (
     <>
-      <p>Cost: {totalAdditionalCost}</p>
-      {isMaxCondiments && <p>You have reached the maximum number of condiments, please remove existing condiment if you would like to select something else.</p>}
-      {hydratedItems.map(({ data, actions, metadata }) => (
-        <div key={metadata.index} style={metadata.isSelected ? { border: '2px solid green'} : { border: '2px solid grey' }}>
-          <button disabled={isMaxCondiments && !metadata.isSelected } onClick={actions.select}>{data.name}</button>
-        </div>
-      ))}
+      <div className="p-4">
+        <p className="text-center">Cost: ${totalAdditionalCost}</p>
+        {isMaxCondiments && <p className="text-center text-orange-800">You have reached the maximum number of condiments, please remove existing condiment if you would like to select something else.</p>}
+      </div>
+      <div className="flex items-center justify-center p-4">
+        {hydratedItems.map(({ data, actions, metadata }) => (
+          <button
+            key={metadata.index}
+            onClick={actions.select}
+            disabled={isMaxCondiments && !metadata.isSelected}
+            className={`py-2 px-4 mx-2 rounded-lg border-2 font-bold ${metadata.isSelected
+              ? "text-green-800 bg-green-100 border-green-800"
+              : "text-sky-800 bg-sky-100 border-sky-800"}`}>
+            {data.name}
+          </button>
+        ))}
+      </div>
     </>
   )
 }
@@ -48,7 +60,6 @@ export default function App() {
   return (
     <div className="App">
       <MultiSelectList.Provider items={response}>
-        <p>Actor ratings:</p>
         <CondimentSelect />
       </MultiSelectList.Provider>
     </div>

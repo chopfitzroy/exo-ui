@@ -25,7 +25,6 @@ interface EditorProps {
 	files: SandpackFiles;
 }
 
-
 const RefreshButton = ({ className = '' }: RefreshButtonProps) => {
 	const { dispatch } = useSandpack();
 
@@ -105,6 +104,9 @@ export const Editor = ({ dir, files }: EditorProps) => {
 			<SandpackProvider
 				files={files}
 				theme={cyberpunk}
+				options={{
+					externalResources: ["https://cdn.tailwindcss.com"]
+				}}
 				template="react-ts"
 				customSetup={{
 					dependencies: {
