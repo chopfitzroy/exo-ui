@@ -14,14 +14,39 @@ Below is a very basic example using a list of numbers and showing the active num
 
 {% editor dir="single-select-list" files=[{ file: "App.tsx" }] /%}
 
-### Configuration
+### Usage
 
-- Types
-- Options
-- Provider
-- Values
-- Map
-- Hook
+Below is some basic usage advice for using `singleSelectList`.
+
+#### Types
+
+The `createSingleSelectList` function takes an optional generic to define the array type that the `SingleSelectList.Provider` provider will recieve in it's `items` prop.
+
+```ts
+interface Accordion {
+	title: string;
+	description: string;
+}
+
+const { SingleSelectList } = createSingleSelectList<Accordion[]>();
+```
+
+#### Options
+
+The `SingleSelectList.Provider` accepts an `options` prop, below is a list of all of the available options:
+
+| Key | Type |
+| --- | --- |
+| `onSelect` | `(item: T[number], index: number, resource: T) => void` where `T` the generic passed to `createSingleSelectList` |
+| `initiallySelectedItemIndex` | `number` |
+
+#### Provider
+
+#### Values
+
+#### Map
+
+#### Hook
 
 ### Related examples
 
